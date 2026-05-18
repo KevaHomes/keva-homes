@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import type { Metadata } from "next";
 import { getProjects, getCategories } from "@/sanity/lib/queries";
 import ProjectsClient from "./ProjectsClient";

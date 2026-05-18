@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import type { Metadata } from "next";
 import { getFaqItems } from "@/sanity/lib/queries";
 import FaqClient from "./FaqClient";

@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import type { Metadata } from "next";
 import { getApprovedReviews } from "@/sanity/lib/queries";
 import ReviewsClient from "./ReviewsClient";
