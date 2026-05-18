@@ -13,9 +13,13 @@ import {
   ClipboardCheck,
   Star,
   MapPin,
+  Users,
+  Target,
+  Handshake,
 } from "lucide-react";
 import { urlFor } from "@/sanity/lib/image";
 import FadeIn from "@/components/FadeIn";
+import SectionNav from "@/components/SectionNav";
 import {
   getProjects,
   getServices,
@@ -30,6 +34,12 @@ const iconMap: Record<string, React.ReactNode> = {
   Zap: <Zap className="w-8 h-8" />,
   Paintbrush: <Paintbrush className="w-8 h-8" />,
   ClipboardCheck: <ClipboardCheck className="w-8 h-8" />,
+};
+
+const aboutIconMap: Record<string, React.ReactNode> = {
+  "Who We Are": <Users className="w-8 h-8" />,
+  "What We're About": <Target className="w-8 h-8" />,
+  "Client Satisfaction": <Handshake className="w-8 h-8" />,
 };
 
 export default async function HomePage() {
@@ -94,8 +104,11 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Sticky Section Nav */}
+      <SectionNav />
+
       {/* About Us */}
-      <section className="py-16 sm:py-24 bg-white">
+      <section id="about" className="py-16 sm:py-24 bg-white scroll-mt-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-12">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-keva-black mb-4">
@@ -110,7 +123,10 @@ export default async function HomePage() {
             {(settings?.aboutSections ?? []).map(
               (section: { _key: string; title: string; content: string }, i: number) => (
                 <FadeIn key={section._key} delay={i * 0.1}>
-                  <div className="bg-keva-gray-50 rounded-2xl p-8 hover:shadow-lg transition-shadow h-full">
+                  <div className="bg-keva-gray-50 rounded-2xl p-8 hover:shadow-lg transition-shadow h-full group">
+                    <div className="w-14 h-14 bg-keva-orange/10 rounded-xl flex items-center justify-center text-keva-orange mb-4 group-hover:bg-keva-orange group-hover:text-white transition-colors">
+                      {aboutIconMap[section.title] ?? <Users className="w-8 h-8" />}
+                    </div>
                     <h3 className="font-heading text-xl font-bold text-keva-black mb-4">
                       {section.title}
                     </h3>
@@ -126,7 +142,7 @@ export default async function HomePage() {
       </section>
 
       {/* Services Preview */}
-      <section className="py-16 sm:py-24 bg-keva-gray-50">
+      <section id="services" className="py-16 sm:py-24 bg-keva-gray-50 scroll-mt-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-12">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-keva-black mb-4">
@@ -175,7 +191,7 @@ export default async function HomePage() {
       </section>
 
       {/* Featured Projects */}
-      <section className="py-16 sm:py-24 bg-white">
+      <section id="projects" className="py-16 sm:py-24 bg-white scroll-mt-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-12">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-keva-black mb-4">
@@ -243,7 +259,7 @@ export default async function HomePage() {
       </section>
 
       {/* Reviews */}
-      <section className="py-16 sm:py-24 bg-keva-gray-50">
+      <section id="reviews" className="py-16 sm:py-24 bg-keva-gray-50 scroll-mt-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-12">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-keva-black mb-4">

@@ -55,7 +55,7 @@ export default function ContactClient() {
                   </h3>
                   <p className="text-green-700">
                     Thank you for reaching out. We&apos;ll get back to you
-                    within 24 hours.
+                    shortly!
                   </p>
                 </div>
               ) : (
