@@ -70,17 +70,7 @@ export default defineType({
               title: "Milestone Title",
               type: "string",
               description:
-                'Choose a preset or type your own (e.g. "Kitchen Remodel", "Foundation Work")',
-              options: {
-                list: [
-                  { title: "Demolition", value: "Demolition" },
-                  { title: "Construction", value: "Construction" },
-                  { title: "Framing", value: "Framing" },
-                  { title: "Electrical & Plumbing", value: "Electrical & Plumbing" },
-                  { title: "Finishing Touches", value: "Finishing Touches" },
-                  { title: "Completed", value: "Completed" },
-                ],
-              },
+                'Type any name — e.g. "Demolition", "Framing", "Kitchen Remodel", "Foundation Work", "Electrical & Plumbing", "Finishing Touches", "Completed"',
               validation: (rule) => rule.required(),
             }),
             defineField({

@@ -159,7 +159,7 @@ export default function ProjectTimeline({
                           />
                         </div>
                         {video.caption && (
-                          <p className="mt-2 text-sm text-keva-gray-600 italic">
+                          <p className="mt-2 text-base text-keva-gray-600 italic">
                             {video.caption}
                           </p>
                         )}
