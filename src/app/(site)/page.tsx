@@ -59,6 +59,9 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* Sticky Section Nav — always visible, sticks below header on scroll */}
+      <SectionNav />
+
       {/* Hero */}
       <section className="relative bg-keva-black text-white overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-keva-black via-keva-gray-900 to-keva-black" />
@@ -104,11 +107,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Sticky Section Nav */}
-      <SectionNav />
-
       {/* About Us */}
-      <section id="about" className="py-16 sm:py-24 bg-white scroll-mt-28">
+      <section id="about" className="py-16 sm:py-24 bg-white scroll-mt-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-12">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-keva-black mb-4">
@@ -142,7 +142,7 @@ export default async function HomePage() {
       </section>
 
       {/* Services Preview */}
-      <section id="services" className="py-16 sm:py-24 bg-keva-gray-50 scroll-mt-28">
+      <section id="services" className="py-16 sm:py-24 bg-keva-gray-50 scroll-mt-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-12">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-keva-black mb-4">
@@ -191,7 +191,7 @@ export default async function HomePage() {
       </section>
 
       {/* Featured Projects */}
-      <section id="projects" className="py-16 sm:py-24 bg-white scroll-mt-28">
+      <section id="projects" className="py-16 sm:py-24 bg-white scroll-mt-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-12">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-keva-black mb-4">
@@ -259,7 +259,7 @@ export default async function HomePage() {
       </section>
 
       {/* Reviews */}
-      <section id="reviews" className="py-16 sm:py-24 bg-keva-gray-50 scroll-mt-28">
+      <section id="reviews" className="py-16 sm:py-24 bg-keva-gray-50 scroll-mt-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-12">
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-keva-black mb-4">

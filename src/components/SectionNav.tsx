@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import clsx from "clsx";
 
 type Section = {
@@ -17,42 +17,9 @@ const sections: Section[] = [
 ];
 
 export default function SectionNav() {
-  const [visible, setVisible] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Use IntersectionObserver on the "about" section to reliably detect
-  // when the user has scrolled past the hero — works on all mobile browsers
-  useEffect(() => {
-    const aboutEl = document.getElementById("about");
-    if (!aboutEl) return;
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          // Show nav when the about section starts entering the viewport
-          // or when user has scrolled past it
-          const rect = aboutEl.getBoundingClientRect();
-          setVisible(rect.top < window.innerHeight * 0.8);
-        }
-      },
-      { threshold: [0, 0.1, 0.5, 1] },
-    );
-
-    observerRef.current.observe(aboutEl);
-    return () => observerRef.current?.disconnect();
-  }, []);
-
-  // Track which section is active via scroll position
   const handleScroll = useCallback(() => {
-    // Also update visibility based on scroll position as a fallback
-    const aboutEl = document.getElementById("about");
-    if (aboutEl) {
-      const rect = aboutEl.getBoundingClientRect();
-      setVisible(rect.top < window.innerHeight * 0.8);
-    }
-
-    // Determine which section is currently in view
     let current = "";
     for (const section of sections) {
       const el = document.getElementById(section.id);
@@ -80,14 +47,7 @@ export default function SectionNav() {
   };
 
   return (
-    <div
-      className={clsx(
-        "fixed top-16 sm:top-20 left-0 right-0 z-40 transition-all duration-300",
-        visible
-          ? "translate-y-0 opacity-100"
-          : "-translate-y-full opacity-0 pointer-events-none",
-      )}
-    >
+    <div className="sticky top-16 sm:top-20 z-40">
       <div className="bg-white/95 backdrop-blur-md border-b border-keva-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2">
