@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import clsx from "clsx";
 
 type Section = {
@@ -19,11 +19,38 @@ const sections: Section[] = [
 export default function SectionNav() {
   const [visible, setVisible] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
+  // Use IntersectionObserver on the "about" section to reliably detect
+  // when the user has scrolled past the hero — works on all mobile browsers
+  useEffect(() => {
+    const aboutEl = document.getElementById("about");
+    if (!aboutEl) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          // Show nav when the about section starts entering the viewport
+          // or when user has scrolled past it
+          const rect = aboutEl.getBoundingClientRect();
+          setVisible(rect.top < window.innerHeight * 0.8);
+        }
+      },
+      { threshold: [0, 0.1, 0.5, 1] },
+    );
+
+    observerRef.current.observe(aboutEl);
+    return () => observerRef.current?.disconnect();
+  }, []);
+
+  // Track which section is active via scroll position
   const handleScroll = useCallback(() => {
-    // Show nav after hero section (roughly 500px down)
-    const scrollY = window.scrollY;
-    setVisible(scrollY > 400);
+    // Also update visibility based on scroll position as a fallback
+    const aboutEl = document.getElementById("about");
+    if (aboutEl) {
+      const rect = aboutEl.getBoundingClientRect();
+      setVisible(rect.top < window.innerHeight * 0.8);
+    }
 
     // Determine which section is currently in view
     let current = "";
@@ -31,7 +58,6 @@ export default function SectionNav() {
       const el = document.getElementById(section.id);
       if (el) {
         const rect = el.getBoundingClientRect();
-        // Section is "active" when its top is above center of viewport
         if (rect.top <= 150) {
           current = section.id;
         }

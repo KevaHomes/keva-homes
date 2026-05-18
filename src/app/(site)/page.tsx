@@ -86,7 +86,7 @@ export default async function HomePage() {
                 href="/contact"
                 className="inline-flex items-center justify-center gap-2 bg-keva-orange text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-keva-orange-600 transition-colors"
               >
-                Get a Free Quote
+                Get a Quote Now
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <a

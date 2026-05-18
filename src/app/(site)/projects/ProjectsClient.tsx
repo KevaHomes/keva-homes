@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Filter, ArrowRight } from "lucide-react";
@@ -33,9 +34,24 @@ export default function ProjectsClient({
   projects: Project[];
   categories: string[];
 }) {
+  const searchParams = useSearchParams();
+
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Read initial filters from URL search params
+  useEffect(() => {
+    const status = searchParams.get("status");
+    const category = searchParams.get("category");
+    if (status && statusFilters.some((f) => f.value === status)) {
+      setStatusFilter(status);
+    }
+    if (category) {
+      setCategoryFilter(category);
+      setShowFilters(true);
+    }
+  }, [searchParams]);
 
   const filtered = useMemo(() => {
     return projects.filter((p) => {

@@ -12,7 +12,7 @@ import {
   Paintbrush,
   ClipboardCheck,
 } from "lucide-react";
-import { getServices, getSiteSettings } from "@/sanity/lib/queries";
+import { getServices, getSiteSettings, getProjects } from "@/sanity/lib/queries";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -30,11 +30,20 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 export default async function ServicesPage() {
-  const [services, settings] = await Promise.all([
+  const [services, settings, allProjects] = await Promise.all([
     getServices(),
     getSiteSettings(),
+    getProjects(),
   ]);
   const additionalServices = settings?.additionalServices ?? [];
+
+  // Build a set of categories that actually have projects tagged to them
+  const categoriesWithProjects = new Set<string>();
+  for (const project of allProjects) {
+    for (const cat of project.categories ?? []) {
+      categoriesWithProjects.add(cat);
+    }
+  }
   return (
     <>
       {/* Hero */}
@@ -85,14 +94,25 @@ export default async function ServicesPage() {
             </h2>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
-            {additionalServices.map((service: string) => (
-              <span
-                key={service}
-                className="px-5 py-2.5 bg-white rounded-full text-sm font-medium text-keva-gray-700 border border-keva-gray-200 hover:border-keva-orange hover:text-keva-orange transition-colors cursor-default"
-              >
-                {service}
-              </span>
-            ))}
+            {additionalServices.map((service: string) => {
+              const hasProjects = categoriesWithProjects.has(service);
+              return hasProjects ? (
+                <Link
+                  key={service}
+                  href={`/projects?category=${encodeURIComponent(service)}`}
+                  className="px-5 py-2.5 bg-white rounded-full text-sm font-medium text-keva-gray-700 border border-keva-gray-200 hover:border-keva-orange hover:text-keva-orange hover:bg-keva-orange/5 transition-colors"
+                >
+                  {service}
+                </Link>
+              ) : (
+                <span
+                  key={service}
+                  className="px-5 py-2.5 bg-white rounded-full text-sm font-medium text-keva-gray-400 border border-keva-gray-100 cursor-default"
+                >
+                  {service}
+                </span>
+              );
+            })}
           </div>
         </div>
       </section>

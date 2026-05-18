@@ -1,6 +1,7 @@
 export const revalidate = 60;
 
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getProjects, getCategories } from "@/sanity/lib/queries";
 import ProjectsClient from "./ProjectsClient";
 
@@ -18,5 +19,9 @@ export default async function ProjectsPage() {
   const categories = categoryDocs.map(
     (c: { title: string }) => c.title,
   );
-  return <ProjectsClient projects={projects} categories={categories} />;
+  return (
+    <Suspense>
+      <ProjectsClient projects={projects} categories={categories} />
+    </Suspense>
+  );
 }
