@@ -83,7 +83,7 @@ export default async function ServicesPage() {
             </h2>
           </div>
           <div className="flex flex-wrap justify-center gap-3">
-            {additionalServices.map((service) => (
+            {additionalServices.map((service: string) => (
               <span
                 key={service}
                 className="px-5 py-2.5 bg-white rounded-full text-sm font-medium text-keva-gray-700 border border-keva-gray-200 hover:border-keva-orange hover:text-keva-orange transition-colors cursor-default"
