@@ -36,6 +36,10 @@ export async function getProjectBySlug(slug: string) {
           asset,
           caption
         },
+        videos[] {
+          url,
+          caption
+        },
         youtubeUrls
       },
       gallery[] {

@@ -99,11 +99,24 @@ export default async function ProjectDetailPage({
                     Follow along from start to finish. Click a milestone to jump to that phase.
                   </p>
                   <ProjectTimeline
-                    milestones={project.milestones}
+                    milestones={project.milestones.map(
+                      (m: {
+                        _key: string;
+                        title: string;
+                        gallery?: { asset: { _ref: string }; caption?: string }[];
+                        videos?: { url: string; caption?: string }[];
+                        youtubeUrls?: string[];
+                      }) => ({
+                        ...m,
+                        gallery: (m.gallery ?? [])
+                          .filter((img) => img.asset?._ref)
+                          .map((img) => ({
+                            url: urlFor(img).width(600).height(450).url(),
+                            caption: img.caption,
+                          })),
+                      }),
+                    )}
                     projectTitle={project.title}
-                    urlFor={(source: { asset: { _ref: string } }) =>
-                      urlFor(source).width(600).height(450).url()
-                    }
                   />
                 </div>
               ) : (

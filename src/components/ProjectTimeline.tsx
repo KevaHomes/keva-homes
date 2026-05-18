@@ -2,11 +2,15 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Play, ChevronLeft, ChevronRight } from "lucide-react";
 import clsx from "clsx";
 
 type MilestoneImage = {
-  asset: { _ref: string };
+  url: string;
+  caption?: string;
+};
+
+type Video = {
+  url: string;
   caption?: string;
 };
 
@@ -14,6 +18,7 @@ type Milestone = {
   _key: string;
   title: string;
   gallery?: MilestoneImage[];
+  videos?: Video[];
   youtubeUrls?: string[];
 };
 
@@ -26,11 +31,9 @@ function getYouTubeId(url: string) {
 export default function ProjectTimeline({
   milestones,
   projectTitle,
-  urlFor,
 }: {
   milestones: Milestone[];
   projectTitle: string;
-  urlFor: (source: { asset: { _ref: string } }) => string;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -42,11 +45,6 @@ export default function ProjectTimeline({
       block: "start",
     });
   };
-
-  const activeMilestone = milestones[activeIndex];
-  const hasContent =
-    (activeMilestone?.gallery?.length ?? 0) > 0 ||
-    (activeMilestone?.youtubeUrls?.length ?? 0) > 0;
 
   return (
     <div>
@@ -105,15 +103,22 @@ export default function ProjectTimeline({
       <div className="space-y-16">
         {milestones.map((milestone, i) => {
           const photos = milestone.gallery ?? [];
-          const videos = milestone.youtubeUrls ?? [];
-          const hasAny = photos.length > 0 || videos.length > 0;
+          // Support both new videos (with captions) and legacy youtubeUrls (plain strings)
+          const newVideos: Video[] = milestone.videos ?? [];
+          const legacyVideos: Video[] = (milestone.youtubeUrls ?? []).map(
+            (url) => ({ url }),
+          );
+          const allVideos = newVideos.length > 0 ? newVideos : legacyVideos;
+          const hasAny = photos.length > 0 || allVideos.length > 0;
 
           if (!hasAny) return null;
 
           return (
             <div
               key={milestone._key}
-              ref={(el) => { sectionRefs.current[i] = el; }}
+              ref={(el) => {
+                sectionRefs.current[i] = el;
+              }}
               className="scroll-mt-28"
             >
               {/* Milestone header */}
@@ -127,23 +132,37 @@ export default function ProjectTimeline({
               </div>
 
               {/* Videos */}
-              {videos.length > 0 && (
-                <div className={clsx("grid gap-4 mb-4", videos.length === 1 ? "grid-cols-1 max-w-2xl" : "grid-cols-1 sm:grid-cols-2")}>
-                  {videos.map((url, vi) => {
-                    const videoId = getYouTubeId(url);
+              {allVideos.length > 0 && (
+                <div
+                  className={clsx(
+                    "grid gap-4 mb-6",
+                    allVideos.length === 1
+                      ? "grid-cols-1 max-w-2xl"
+                      : "grid-cols-1 sm:grid-cols-2",
+                  )}
+                >
+                  {allVideos.map((video, vi) => {
+                    const videoId = getYouTubeId(video.url);
                     if (!videoId) return null;
                     return (
-                      <div
-                        key={vi}
-                        className="aspect-video rounded-xl overflow-hidden bg-keva-gray-100"
-                      >
-                        <iframe
-                          src={`https://www.youtube.com/embed/${videoId}`}
-                          title={`${projectTitle} - ${milestone.title} video ${vi + 1}`}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          className="w-full h-full"
-                        />
+                      <div key={vi}>
+                        <div className="aspect-video rounded-xl overflow-hidden bg-keva-gray-100">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${videoId}`}
+                            title={
+                              video.caption ??
+                              `${projectTitle} - ${milestone.title} video ${vi + 1}`
+                            }
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="w-full h-full"
+                          />
+                        </div>
+                        {video.caption && (
+                          <p className="mt-2 text-sm text-keva-gray-600 italic">
+                            {video.caption}
+                          </p>
+                        )}
                       </div>
                     );
                   })}
@@ -159,7 +178,7 @@ export default function ProjectTimeline({
                       className="aspect-[4/3] bg-keva-gray-100 rounded-xl relative overflow-hidden"
                     >
                       <Image
-                        src={urlFor(img)}
+                        src={img.url}
                         alt={
                           img.caption ??
                           `${projectTitle} - ${milestone.title} photo ${pi + 1}`

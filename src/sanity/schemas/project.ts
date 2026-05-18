@@ -102,9 +102,44 @@ export default defineType({
               ],
             }),
             defineField({
-              name: "youtubeUrls",
-              title: "YouTube Video URLs",
+              name: "videos",
+              title: "YouTube Videos",
               type: "array",
+              of: [
+                defineArrayMember({
+                  type: "object",
+                  name: "video",
+                  fields: [
+                    defineField({
+                      name: "url",
+                      title: "YouTube URL",
+                      type: "url",
+                      validation: (rule) => rule.required(),
+                    }),
+                    defineField({
+                      name: "caption",
+                      title: "Caption",
+                      type: "string",
+                    }),
+                  ],
+                  preview: {
+                    select: { title: "caption", subtitle: "url" },
+                    prepare({ title, subtitle }: { title?: string; subtitle?: string }) {
+                      return {
+                        title: title || subtitle || "Untitled video",
+                        subtitle: title ? subtitle : undefined,
+                      };
+                    },
+                  },
+                }),
+              ],
+            }),
+            // Legacy field — kept for backward compat with milestones that used plain URL arrays
+            defineField({
+              name: "youtubeUrls",
+              title: "YouTube URLs (Legacy)",
+              type: "array",
+              hidden: true,
               of: [defineArrayMember({ type: "url" })],
             }),
           ],
@@ -112,22 +147,25 @@ export default defineType({
             select: {
               title: "title",
               gallery: "gallery",
+              videos: "videos",
               youtubeUrls: "youtubeUrls",
             },
             prepare({
               title,
               gallery,
+              videos,
               youtubeUrls,
             }: {
               title?: string;
               gallery?: unknown[];
+              videos?: unknown[];
               youtubeUrls?: unknown[];
             }) {
               const photos = gallery?.length ?? 0;
-              const videos = youtubeUrls?.length ?? 0;
+              const videoCount = (videos?.length ?? 0) || (youtubeUrls?.length ?? 0);
               const parts = [];
               if (photos) parts.push(`${photos} photo${photos > 1 ? "s" : ""}`);
-              if (videos) parts.push(`${videos} video${videos > 1 ? "s" : ""}`);
+              if (videoCount) parts.push(`${videoCount} video${videoCount > 1 ? "s" : ""}`);
               return {
                 title: title ?? "Untitled Milestone",
                 subtitle: parts.join(", ") || "No content yet",
