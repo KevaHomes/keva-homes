@@ -125,6 +125,35 @@ export default async function ProjectDetailPage({
                 </div>
               )}
 
+              {project.youtubeUrls && project.youtubeUrls.length > 0 && (
+                <div className="mb-12">
+                  <h3 className="font-heading text-xl font-bold text-keva-black mb-4">
+                    Project Videos
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {project.youtubeUrls.map((url: string, i: number) => {
+                      const videoId =
+                        url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/)?.[1];
+                      if (!videoId) return null;
+                      return (
+                        <div
+                          key={i}
+                          className="aspect-video rounded-xl overflow-hidden bg-keva-gray-100"
+                        >
+                          <iframe
+                            src={`https://www.youtube.com/embed/${videoId}`}
+                            title={`${project.title} video ${i + 1}`}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="w-full h-full"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div>
                 <h3 className="font-heading text-xl font-bold text-keva-black mb-6">
                   Project Journey
