@@ -6,6 +6,7 @@ import Image from "next/image";
 import { MapPin, Calendar, ArrowLeft, ArrowRight, Tag } from "lucide-react";
 import { getProjectBySlug, getProjectSlugs, getProjects } from "@/sanity/lib/queries";
 import { urlFor } from "@/sanity/lib/image";
+import ProjectTimeline from "@/components/ProjectTimeline";
 
 export async function generateStaticParams() {
   const slugs = await getProjectSlugs();
@@ -88,100 +89,92 @@ export default async function ProjectDetailPage({
                 {project.description}
               </p>
 
-              {project.gallery && project.gallery.length > 0 && (
-                <div className="mb-12">
-                  <h3 className="font-heading text-xl font-bold text-keva-black mb-4">
-                    Project Gallery
+              {/* Milestone Timeline (new) or Legacy Gallery/Videos (fallback) */}
+              {project.milestones && project.milestones.length > 0 ? (
+                <div>
+                  <h3 className="font-heading text-xl font-bold text-keva-black mb-2">
+                    Project Journey
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {project.gallery.map(
-                      (
-                        img: {
-                          asset: { _ref: string };
-                          caption?: string;
-                          phase?: string;
-                        },
-                        i: number,
-                      ) => (
-                        <div
-                          key={i}
-                          className="aspect-[4/3] bg-keva-gray-100 rounded-xl relative overflow-hidden"
-                        >
-                          <Image
-                            src={urlFor(img).width(600).height(450).url()}
-                            alt={img.caption ?? `${project.title} photo ${i + 1}`}
-                            fill
-                            className="object-cover hover:scale-105 transition-transform duration-300"
-                          />
-                          {img.phase && (
-                            <span className="absolute bottom-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full bg-keva-orange text-white uppercase z-10">
-                              {img.phase}
-                            </span>
-                          )}
-                        </div>
-                      ),
-                    )}
-                  </div>
+                  <p className="text-keva-gray-500 text-sm mb-6">
+                    Follow along from start to finish. Click a milestone to jump to that phase.
+                  </p>
+                  <ProjectTimeline
+                    milestones={project.milestones}
+                    projectTitle={project.title}
+                    urlFor={(source: { asset: { _ref: string } }) =>
+                      urlFor(source).width(600).height(450).url()
+                    }
+                  />
                 </div>
-              )}
-
-              {project.youtubeUrls && project.youtubeUrls.length > 0 && (
-                <div className="mb-12">
-                  <h3 className="font-heading text-xl font-bold text-keva-black mb-4">
-                    Project Videos
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {project.youtubeUrls.map((url: string, i: number) => {
-                      const videoId =
-                        url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/)?.[1];
-                      if (!videoId) return null;
-                      return (
-                        <div
-                          key={i}
-                          className="aspect-video rounded-xl overflow-hidden bg-keva-gray-100"
-                        >
-                          <iframe
-                            src={`https://www.youtube.com/embed/${videoId}`}
-                            title={`${project.title} video ${i + 1}`}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            className="w-full h-full"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <h3 className="font-heading text-xl font-bold text-keva-black mb-6">
-                  Project Journey
-                </h3>
-                <div className="space-y-8 relative before:absolute before:left-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-keva-gray-200">
-                  {[
-                    "Demolition",
-                    "Construction",
-                    "Finishing Touches",
-                    "Completed",
-                  ].map((phase, i) => (
-                    <div key={phase} className="flex gap-6 relative">
-                      <div className="w-8 h-8 rounded-full bg-keva-orange flex items-center justify-center text-white font-bold text-xs flex-shrink-0 z-10">
-                        {i + 1}
-                      </div>
-                      <div>
-                        <h4 className="font-heading font-bold text-keva-black mb-1">
-                          {phase}
-                        </h4>
-                        <p className="text-keva-gray-600 text-sm">
-                          Follow along as we progress through the{" "}
-                          {phase.toLowerCase()} phase of this project.
-                        </p>
+              ) : (
+                <>
+                  {project.gallery && project.gallery.length > 0 && (
+                    <div className="mb-12">
+                      <h3 className="font-heading text-xl font-bold text-keva-black mb-4">
+                        Project Gallery
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        {project.gallery.map(
+                          (
+                            img: {
+                              asset: { _ref: string };
+                              caption?: string;
+                              phase?: string;
+                            },
+                            i: number,
+                          ) => (
+                            <div
+                              key={i}
+                              className="aspect-[4/3] bg-keva-gray-100 rounded-xl relative overflow-hidden"
+                            >
+                              <Image
+                                src={urlFor(img).width(600).height(450).url()}
+                                alt={img.caption ?? `${project.title} photo ${i + 1}`}
+                                fill
+                                className="object-cover hover:scale-105 transition-transform duration-300"
+                              />
+                              {img.phase && (
+                                <span className="absolute bottom-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full bg-keva-orange text-white uppercase z-10">
+                                  {img.phase}
+                                </span>
+                              )}
+                            </div>
+                          ),
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  )}
+
+                  {project.youtubeUrls && project.youtubeUrls.length > 0 && (
+                    <div className="mb-12">
+                      <h3 className="font-heading text-xl font-bold text-keva-black mb-4">
+                        Project Videos
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {project.youtubeUrls.map((url: string, i: number) => {
+                          const videoId =
+                            url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/)?.[1];
+                          if (!videoId) return null;
+                          return (
+                            <div
+                              key={i}
+                              className="aspect-video rounded-xl overflow-hidden bg-keva-gray-100"
+                            >
+                              <iframe
+                                src={`https://www.youtube.com/embed/${videoId}`}
+                                title={`${project.title} video ${i + 1}`}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="w-full h-full"
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
 
             <div>

@@ -29,6 +29,15 @@ export async function getProjectBySlug(slug: string) {
       season,
       status,
       coverImage,
+      milestones[] {
+        _key,
+        title,
+        gallery[] {
+          asset,
+          caption
+        },
+        youtubeUrls
+      },
       gallery[] {
         asset,
         caption,

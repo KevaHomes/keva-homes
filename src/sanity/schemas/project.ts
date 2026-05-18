@@ -1,4 +1,4 @@
-import { defineType, defineField } from "sanity";
+import { defineType, defineField, defineArrayMember } from "sanity";
 
 export default defineType({
   name: "project",
@@ -54,9 +54,96 @@ export default defineType({
       options: { hotspot: true },
     }),
     defineField({
-      name: "gallery",
-      title: "Photo Gallery",
+      name: "milestones",
+      title: "Project Milestones",
+      description:
+        "Add milestones to tell the story of this project from start to finish. Each milestone can have its own photos and videos.",
       type: "array",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "milestone",
+          title: "Milestone",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Milestone Title",
+              type: "string",
+              description:
+                'Choose a preset or type your own (e.g. "Kitchen Remodel", "Foundation Work")',
+              options: {
+                list: [
+                  { title: "Demolition", value: "Demolition" },
+                  { title: "Construction", value: "Construction" },
+                  { title: "Framing", value: "Framing" },
+                  { title: "Electrical & Plumbing", value: "Electrical & Plumbing" },
+                  { title: "Finishing Touches", value: "Finishing Touches" },
+                  { title: "Completed", value: "Completed" },
+                ],
+              },
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "gallery",
+              title: "Photos",
+              type: "array",
+              of: [
+                defineArrayMember({
+                  type: "image",
+                  options: { hotspot: true },
+                  fields: [
+                    defineField({
+                      name: "caption",
+                      type: "string",
+                      title: "Caption",
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            defineField({
+              name: "youtubeUrls",
+              title: "YouTube Video URLs",
+              type: "array",
+              of: [defineArrayMember({ type: "url" })],
+            }),
+          ],
+          preview: {
+            select: {
+              title: "title",
+              gallery: "gallery",
+              youtubeUrls: "youtubeUrls",
+            },
+            prepare({
+              title,
+              gallery,
+              youtubeUrls,
+            }: {
+              title?: string;
+              gallery?: unknown[];
+              youtubeUrls?: unknown[];
+            }) {
+              const photos = gallery?.length ?? 0;
+              const videos = youtubeUrls?.length ?? 0;
+              const parts = [];
+              if (photos) parts.push(`${photos} photo${photos > 1 ? "s" : ""}`);
+              if (videos) parts.push(`${videos} video${videos > 1 ? "s" : ""}`);
+              return {
+                title: title ?? "Untitled Milestone",
+                subtitle: parts.join(", ") || "No content yet",
+              };
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: "gallery",
+      title: "Photo Gallery (Legacy)",
+      description:
+        "Legacy field — use Milestones above instead. Photos here will still display if no milestones exist.",
+      type: "array",
+      hidden: true,
       of: [
         {
           type: "image",
@@ -91,8 +178,11 @@ export default defineType({
     }),
     defineField({
       name: "youtubeUrls",
-      title: "YouTube Video URLs",
+      title: "YouTube Video URLs (Legacy)",
+      description:
+        "Legacy field — use Milestones above instead. Videos here will still display if no milestones exist.",
       type: "array",
+      hidden: true,
       of: [{ type: "url" }],
     }),
     defineField({
