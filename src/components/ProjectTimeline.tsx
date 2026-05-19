@@ -39,8 +39,12 @@ export default function ProjectTimeline({
   onImageClick?: (milestoneIndex: number, imageIndex: number) => void;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isStuck, setIsStuck] = useState(false);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const timelineRef = useRef<HTMLDivElement>(null);
+  const stickyTriggerRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  const barHeightRef = useRef(0);
   const isScrollingTo = useRef(false);
 
   const scrollActiveIntoView = useCallback((index: number) => {
@@ -53,6 +57,28 @@ export default function ProjectTimeline({
       const scrollLeft = scrollContainer.scrollLeft + btnRect.left - containerRect.left - containerRect.width / 2 + btnRect.width / 2;
       scrollContainer.scrollTo({ left: scrollLeft, behavior: "smooth" });
     }
+  }, []);
+
+  // Measure bar height on mount (before it can become fixed)
+  useEffect(() => {
+    if (barRef.current) {
+      barHeightRef.current = barRef.current.offsetHeight;
+    }
+  }, [milestones]);
+
+  // Sticky detection: when sentinel scrolls above viewport, fix the bar
+  useEffect(() => {
+    const sentinel = stickyTriggerRef.current;
+    if (!sentinel) return;
+
+    const handleScroll = () => {
+      const shouldStick = sentinel.getBoundingClientRect().top < 0;
+      setIsStuck((prev) => (prev === shouldStick ? prev : shouldStick));
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -94,8 +120,24 @@ export default function ProjectTimeline({
 
   return (
     <div>
-      {/* Sticky timeline bar — uses native CSS sticky */}
-      <div className="sticky top-16 sm:top-20 z-40 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 bg-white border-b border-keva-gray-100 mb-8">
+      {/* Sentinel marks where the bar naturally sits */}
+      <div ref={stickyTriggerRef} className="h-px" />
+
+      {/* Placeholder prevents layout jump when bar becomes fixed */}
+      {isStuck && (
+        <div style={{ height: barHeightRef.current }} className="mb-8" />
+      )}
+
+      {/* Timeline bar — switches between in-flow and fixed */}
+      <div
+        ref={barRef}
+        className={clsx(
+          "z-40 bg-white border-b border-keva-gray-100",
+          isStuck
+            ? "fixed top-16 sm:top-20 left-0 right-0 px-4 sm:px-6 lg:px-8 shadow-sm"
+            : "-mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 mb-8",
+        )}
+      >
         <div
           ref={timelineRef}
           className="overflow-x-auto scrollbar-hide"
