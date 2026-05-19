@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Star, Send, MessageSquare } from "lucide-react";
 import { submitReview } from "@/app/actions/review";
+import TruncatedText from "@/components/TruncatedText";
 
 type Review = {
   _id: string;
@@ -117,9 +118,10 @@ export default function ReviewsClient({ reviews }: { reviews: Review[] }) {
                   </div>
                 </div>
                 <StarRating rating={review.rating} />
-                <p className="text-keva-gray-600 leading-relaxed mt-3">
-                  &ldquo;{review.content}&rdquo;
-                </p>
+                <TruncatedText
+                  text={review.content}
+                  className="text-keva-gray-600 leading-relaxed mt-3"
+                />
                 <p className="text-xs text-keva-gray-400 mt-3 flex items-center gap-1">
                   <svg
                     className="w-4 h-4"

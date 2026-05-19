@@ -1,4 +1,5 @@
 import { defineType, defineField } from "sanity";
+import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-list";
 
 export default defineType({
   name: "review",
@@ -55,7 +56,9 @@ export default defineType({
       },
       initialValue: "pending",
     }),
+    orderRankField({ type: "review" }),
   ],
+  orderings: [orderRankOrdering],
   preview: {
     select: {
       title: "author",

@@ -20,6 +20,7 @@ import {
 import { urlFor } from "@/sanity/lib/image";
 import FadeIn from "@/components/FadeIn";
 import SectionNav from "@/components/SectionNav";
+import TruncatedText from "@/components/TruncatedText";
 import {
   getProjects,
   getServices,
@@ -285,9 +286,10 @@ export default async function HomePage() {
                       />
                     ))}
                   </div>
-                  <p className="text-keva-gray-600 text-sm leading-relaxed mb-4">
-                    &ldquo;{review.content}&rdquo;
-                  </p>
+                  <TruncatedText
+                    text={review.content}
+                    className="text-keva-gray-600 text-sm leading-relaxed mb-4"
+                  />
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-keva-orange flex items-center justify-center text-white font-bold text-sm">
                       {review.author.charAt(0)}
@@ -332,7 +334,7 @@ export default async function HomePage() {
               href="/contact"
               className="inline-flex items-center gap-2 bg-white text-keva-orange px-8 py-4 rounded-xl text-lg font-bold hover:bg-keva-gray-100 transition-colors"
             >
-              Get a Free Quote
+              Contact Us Now
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a

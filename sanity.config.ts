@@ -12,20 +12,30 @@ export default defineConfig({
   basePath: "/studio",
   plugins: [
     structureTool({
-      structure: (S, context) =>
-        S.list()
+      structure: (S, context) => {
+        const orderableTypes = [
+          { type: "project", title: "Projects" },
+          { type: "service", title: "Services" },
+          { type: "faqItem", title: "FAQ Items" },
+          { type: "review", title: "Reviews" },
+        ];
+        return S.list()
           .title("Content")
           .items([
-            orderableDocumentListDeskItem({
-              type: "project",
-              title: "Projects",
-              S,
-              context,
-            }),
-            ...S.documentTypeListItems().filter(
-              (item) => item.getId() !== "project",
+            ...orderableTypes.map((t) =>
+              orderableDocumentListDeskItem({
+                type: t.type,
+                title: t.title,
+                S,
+                context,
+              }),
             ),
-          ]),
+            ...S.documentTypeListItems().filter(
+              (item) =>
+                !orderableTypes.some((t) => t.type === item.getId()),
+            ),
+          ]);
+      },
     }),
     visionTool(),
   ],

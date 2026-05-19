@@ -83,7 +83,7 @@ export default async function ProjectDetailPage({
               </div>
             </div>
             {project.coverImage && (
-              <div className="hidden md:block flex-shrink-0 w-48 lg:w-56 aspect-[4/3] rounded-xl overflow-hidden border-2 border-white/10">
+              <div className="flex-shrink-0 w-24 sm:w-36 md:w-48 lg:w-56 aspect-[4/3] rounded-xl overflow-hidden border-2 border-white/10">
                 <Image
                   src={urlFor(project.coverImage).width(400).height(300).url()}
                   alt={project.title}

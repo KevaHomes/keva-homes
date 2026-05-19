@@ -139,7 +139,7 @@ export default function FaqClient({
             href="/contact"
             className="inline-flex items-center gap-2 bg-white text-keva-orange px-8 py-4 rounded-xl text-lg font-bold hover:bg-keva-gray-100 transition-colors"
           >
-            Get a Free Quote
+            Contact Us Now
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>

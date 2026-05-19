@@ -75,31 +75,29 @@ export async function getCategories() {
 
 export async function getServices() {
   return client.fetch(`
-    *[_type == "service"] | order(order asc) {
+    *[_type == "service"] | order(orderRank asc) {
       _id,
       title,
       "slug": slug.current,
       description,
-      icon,
-      order
+      icon
     }
   `);
 }
 
 export async function getFaqItems() {
   return client.fetch(`
-    *[_type == "faqItem"] | order(order asc) {
+    *[_type == "faqItem"] | order(orderRank asc) {
       _id,
       question,
-      answer,
-      order
+      answer
     }
   `);
 }
 
 export async function getApprovedReviews() {
   return client.fetch(`
-    *[_type == "review" && status == "approved"] | order(_createdAt desc) {
+    *[_type == "review" && status == "approved"] | order(orderRank asc) {
       _id,
       author,
       rating,

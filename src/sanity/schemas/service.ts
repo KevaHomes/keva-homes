@@ -1,4 +1,5 @@
 import { defineType, defineField } from "sanity";
+import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-list";
 
 export default defineType({
   name: "service",
@@ -30,17 +31,7 @@ export default defineType({
       type: "string",
       description: "Lucide icon name (e.g. 'home', 'hammer', 'wrench')",
     }),
-    defineField({
-      name: "order",
-      title: "Display Order",
-      type: "number",
-    }),
+    orderRankField({ type: "service" }),
   ],
-  orderings: [
-    {
-      title: "Display Order",
-      name: "orderAsc",
-      by: [{ field: "order", direction: "asc" }],
-    },
-  ],
+  orderings: [orderRankOrdering],
 });
