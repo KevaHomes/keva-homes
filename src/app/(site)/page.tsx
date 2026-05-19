@@ -51,10 +51,7 @@ export default async function HomePage() {
   ]);
 
   const featuredProjects = allProjects
-    .filter(
-      (p: { status: string }) =>
-        p.status === "featured" || p.status === "completed",
-    )
+    .filter((p: { isFeatured?: boolean }) => p.isFeatured)
     .slice(0, 4);
 
   return (

@@ -13,9 +13,9 @@ const navLinks = [
     href: "/projects",
     label: "Projects",
     children: [
-      { href: "/projects?status=current", label: "Current Projects" },
-      { href: "/projects?status=featured", label: "Featured Projects" },
       { href: "/projects", label: "All Projects" },
+      { href: "/projects?status=featured", label: "Featured Projects" },
+      { href: "/projects?status=current", label: "Current Projects" },
     ],
   },
   { href: "/faq", label: "FAQ" },

@@ -2,7 +2,7 @@ import { client } from "./client";
 
 export async function getProjects() {
   return client.fetch(`
-    *[_type == "project"] | order(order asc) {
+    *[_type == "project"] | order(orderRank asc) {
       _id,
       title,
       "slug": slug.current,
@@ -10,6 +10,7 @@ export async function getProjects() {
       location,
       season,
       status,
+      isFeatured,
       coverImage,
       "categories": categories[]->title,
       youtubeUrls
@@ -28,6 +29,7 @@ export async function getProjectBySlug(slug: string) {
       location,
       season,
       status,
+      isFeatured,
       coverImage,
       milestones[] {
         _key,

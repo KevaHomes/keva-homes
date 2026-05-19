@@ -6,7 +6,7 @@ import Image from "next/image";
 import { MapPin, Calendar, ArrowLeft, ArrowRight, Tag } from "lucide-react";
 import { getProjectBySlug, getProjectSlugs, getProjects } from "@/sanity/lib/queries";
 import { urlFor } from "@/sanity/lib/image";
-import ProjectTimeline from "@/components/ProjectTimeline";
+import ProjectContent from "@/components/ProjectContent";
 
 export async function generateStaticParams() {
   const slugs = await getProjectSlugs();
@@ -56,23 +56,43 @@ export default async function ProjectDetailPage({
             <ArrowLeft className="w-4 h-4" />
             Back to Projects
           </Link>
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-keva-orange text-white uppercase">
-              {project.status}
-            </span>
-          </div>
-          <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black mb-4">
-            {project.title}
-          </h1>
-          <div className="flex flex-wrap items-center gap-4 text-keva-gray-400">
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="w-5 h-5" />
-              {project.location}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Calendar className="w-5 h-5" />
-              {project.season}
-            </span>
+          <div className="flex items-start gap-8">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-4">
+                <span className={`text-xs font-bold px-3 py-1 rounded-full text-white uppercase ${project.status === "current" ? "bg-green-500" : "bg-keva-gray-600"}`}>
+                  {project.status}
+                </span>
+                {project.isFeatured && (
+                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-keva-orange text-white uppercase">
+                    Featured
+                  </span>
+                )}
+              </div>
+              <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black mb-4">
+                {project.title}
+              </h1>
+              <div className="flex flex-wrap items-center gap-4 text-keva-gray-400">
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin className="w-5 h-5" />
+                  {project.location}
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Calendar className="w-5 h-5" />
+                  {project.season}
+                </span>
+              </div>
+            </div>
+            {project.coverImage && (
+              <div className="hidden md:block flex-shrink-0 w-48 lg:w-56 aspect-[4/3] rounded-xl overflow-hidden border-2 border-white/10">
+                <Image
+                  src={urlFor(project.coverImage).width(400).height(300).url()}
+                  alt={project.title}
+                  width={400}
+                  height={300}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -98,7 +118,7 @@ export default async function ProjectDetailPage({
                   <p className="text-keva-gray-500 text-sm mb-6">
                     Follow along from start to finish. Click a milestone to jump to that phase.
                   </p>
-                  <ProjectTimeline
+                  <ProjectContent
                     milestones={project.milestones.map(
                       (m: {
                         _key: string;
@@ -112,6 +132,7 @@ export default async function ProjectDetailPage({
                           .filter((img) => img.asset?._ref)
                           .map((img) => ({
                             url: urlFor(img).width(600).height(450).url(),
+                            fullUrl: urlFor(img).width(1600).height(1200).url(),
                             caption: img.caption,
                           })),
                       }),

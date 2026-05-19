@@ -14,6 +14,7 @@ type Project = {
   title: string;
   location: string;
   status: string;
+  isFeatured?: boolean;
   season: string;
   description: string;
   categories: string[];
@@ -23,8 +24,8 @@ type Project = {
 const statusFilters = [
   { value: "all", label: "All" },
   { value: "current", label: "Current" },
-  { value: "completed", label: "Completed" },
   { value: "featured", label: "Featured" },
+  { value: "completed", label: "Completed" },
 ];
 
 export default function ProjectsClient({
@@ -54,12 +55,25 @@ export default function ProjectsClient({
   }, [searchParams]);
 
   const filtered = useMemo(() => {
-    return projects.filter((p) => {
-      if (statusFilter !== "all" && p.status !== statusFilter) return false;
+    const matched = projects.filter((p) => {
+      if (statusFilter === "featured" && !p.isFeatured) return false;
+      if (statusFilter === "current" && p.status !== "current") return false;
+      if (statusFilter === "completed" && p.status !== "completed") return false;
       if (categoryFilter && !p.categories?.includes(categoryFilter))
         return false;
       return true;
     });
+    if (statusFilter === "all") {
+      return matched.sort((a, b) => {
+        const rank = (p: Project) => {
+          if (p.status === "current") return 0;
+          if (p.isFeatured) return 1;
+          return 2;
+        };
+        return rank(a) - rank(b);
+      });
+    }
+    return matched;
   }, [projects, statusFilter, categoryFilter]);
 
   return (
@@ -154,19 +168,22 @@ export default function ProjectsClient({
                       />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-keva-black/60 to-transparent z-10" />
-                    <div className="absolute top-3 left-3 z-20">
+                    <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5">
                       <span
                         className={clsx(
                           "text-xs font-bold px-2.5 py-1 rounded-full uppercase",
                           project.status === "current"
                             ? "bg-green-500 text-white"
-                            : project.status === "featured"
-                              ? "bg-keva-orange text-white"
-                              : "bg-keva-gray-700 text-white",
+                            : "bg-keva-gray-700 text-white",
                         )}
                       >
                         {project.status}
                       </span>
+                      {project.isFeatured && (
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-full uppercase bg-keva-orange text-white">
+                          Featured
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="p-5">

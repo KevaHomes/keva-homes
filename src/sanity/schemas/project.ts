@@ -1,4 +1,5 @@
 import { defineType, defineField, defineArrayMember } from "sanity";
+import { orderRankField, orderRankOrdering } from "@sanity/orderable-document-list";
 
 export default defineType({
   name: "project",
@@ -42,10 +43,16 @@ export default defineType({
         list: [
           { title: "Current", value: "current" },
           { title: "Completed", value: "completed" },
-          { title: "Featured", value: "featured" },
         ],
       },
       initialValue: "current",
+    }),
+    defineField({
+      name: "isFeatured",
+      title: "Featured Project",
+      description: "Show this project in the Featured Projects section on the home page",
+      type: "boolean",
+      initialValue: false,
     }),
     defineField({
       name: "coverImage",
@@ -213,19 +220,10 @@ export default defineType({
       hidden: true,
       of: [{ type: "url" }],
     }),
-    defineField({
-      name: "order",
-      title: "Display Order",
-      type: "number",
-      hidden: true,
-    }),
+    orderRankField({ type: "project" }),
   ],
   orderings: [
-    {
-      title: "Display Order",
-      name: "orderAsc",
-      by: [{ field: "order", direction: "asc" }],
-    },
+    orderRankOrdering,
   ],
   preview: {
     select: {

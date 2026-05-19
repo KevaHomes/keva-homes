@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 
 type MilestoneImage = {
   url: string;
+  fullUrl?: string;
   caption?: string;
 };
 
@@ -31,71 +32,116 @@ function getYouTubeId(url: string) {
 export default function ProjectTimeline({
   milestones,
   projectTitle,
+  onImageClick,
 }: {
   milestones: Milestone[];
   projectTitle: string;
+  onImageClick?: (milestoneIndex: number, imageIndex: number) => void;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const isScrollingTo = useRef(false);
+
+  const scrollActiveIntoView = useCallback((index: number) => {
+    const scrollContainer = timelineRef.current;
+    const buttons = scrollContainer?.querySelectorAll("button");
+    const btn = buttons?.[index];
+    if (btn && scrollContainer) {
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+      const scrollLeft = scrollContainer.scrollLeft + btnRect.left - containerRect.left - containerRect.width / 2 + btnRect.width / 2;
+      scrollContainer.scrollTo({ left: scrollLeft, behavior: "smooth" });
+    }
+  }, []);
+
+  useEffect(() => {
+    const sections = sectionRefs.current.filter(Boolean) as HTMLDivElement[];
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (isScrollingTo.current) return;
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const index = sections.indexOf(entry.target as HTMLDivElement);
+            if (index !== -1) {
+              setActiveIndex(index);
+              scrollActiveIntoView(index);
+            }
+          }
+        }
+      },
+      { rootMargin: "-20% 0px -60% 0px", threshold: 0.1 },
+    );
+
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, [milestones, scrollActiveIntoView]);
 
   const scrollToMilestone = (index: number) => {
     setActiveIndex(index);
+    scrollActiveIntoView(index);
+    isScrollingTo.current = true;
     sectionRefs.current[index]?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
+    setTimeout(() => {
+      isScrollingTo.current = false;
+    }, 800);
   };
 
   return (
     <div>
-      {/* Horizontal Timeline */}
-      <div className="mb-8 overflow-x-auto scrollbar-hide">
-        <div className="relative flex items-center min-w-max px-2 py-4">
-          {/* Connecting line */}
-          <div className="absolute top-1/2 left-8 right-8 h-0.5 bg-keva-gray-200 -translate-y-1/2" />
-
-          {milestones.map((milestone, i) => {
-            const isActive = i === activeIndex;
-            const isPast = i < activeIndex;
-
-            return (
-              <button
-                key={milestone._key}
-                onClick={() => scrollToMilestone(i)}
-                className={clsx(
-                  "relative flex flex-col items-center gap-2 px-6 group transition-all",
-                  "focus:outline-none",
-                )}
-              >
-                {/* Node */}
-                <div
+      {/* Sticky timeline bar — uses native CSS sticky */}
+      <div className="sticky top-16 sm:top-20 z-40 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 bg-white border-b border-keva-gray-100 mb-8">
+        <div
+          ref={timelineRef}
+          className="overflow-x-auto scrollbar-hide"
+        >
+          <div className="relative flex items-center min-w-max px-2 py-4">
+            <div className="absolute top-1/2 left-8 right-8 h-0.5 bg-keva-gray-200 -translate-y-1/2" />
+            {milestones.map((milestone, i) => {
+              const isActive = i === activeIndex;
+              const isPast = i < activeIndex;
+              return (
+                <button
+                  key={milestone._key}
+                  onClick={() => scrollToMilestone(i)}
                   className={clsx(
-                    "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all z-10 border-2",
-                    isActive
-                      ? "bg-keva-orange border-keva-orange text-white scale-110"
-                      : isPast
-                        ? "bg-keva-orange/20 border-keva-orange text-keva-orange"
-                        : "bg-white border-keva-gray-300 text-keva-gray-400 group-hover:border-keva-orange group-hover:text-keva-orange",
+                    "relative flex flex-col items-center gap-2 px-6 group transition-all",
+                    "focus:outline-none",
                   )}
                 >
-                  {i + 1}
-                </div>
-                {/* Label */}
-                <span
-                  className={clsx(
-                    "text-xs font-medium whitespace-nowrap transition-colors",
-                    isActive
-                      ? "text-keva-orange font-bold"
-                      : isPast
-                        ? "text-keva-gray-600"
-                        : "text-keva-gray-400 group-hover:text-keva-gray-600",
-                  )}
-                >
-                  {milestone.title}
-                </span>
-              </button>
-            );
-          })}
+                  <div
+                    className={clsx(
+                      "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all z-10 border-2",
+                      isActive
+                        ? "bg-keva-orange border-keva-orange text-white scale-110"
+                        : isPast
+                          ? "bg-keva-orange/20 border-keva-orange text-keva-orange"
+                          : "bg-white border-keva-gray-300 text-keva-gray-400 group-hover:border-keva-orange group-hover:text-keva-orange",
+                    )}
+                  >
+                    {i + 1}
+                  </div>
+                  <span
+                    className={clsx(
+                      "text-xs font-medium whitespace-nowrap transition-colors",
+                      isActive
+                        ? "text-keva-orange font-bold"
+                        : isPast
+                          ? "text-keva-gray-600"
+                          : "text-keva-gray-400 group-hover:text-keva-gray-600",
+                    )}
+                  >
+                    {milestone.title}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -103,7 +149,6 @@ export default function ProjectTimeline({
       <div className="space-y-16">
         {milestones.map((milestone, i) => {
           const photos = milestone.gallery ?? [];
-          // Support both new videos (with captions) and legacy youtubeUrls (plain strings)
           const newVideos: Video[] = milestone.videos ?? [];
           const legacyVideos: Video[] = (milestone.youtubeUrls ?? []).map(
             (url) => ({ url }),
@@ -119,9 +164,8 @@ export default function ProjectTimeline({
               ref={(el) => {
                 sectionRefs.current[i] = el;
               }}
-              className="scroll-mt-28"
+              className="scroll-mt-40"
             >
-              {/* Milestone header */}
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 rounded-full bg-keva-orange flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
                   {i + 1}
@@ -131,7 +175,6 @@ export default function ProjectTimeline({
                 </h3>
               </div>
 
-              {/* Videos */}
               {allVideos.length > 0 && (
                 <div
                   className={clsx(
@@ -169,13 +212,14 @@ export default function ProjectTimeline({
                 </div>
               )}
 
-              {/* Photos */}
               {photos.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {photos.map((img, pi) => (
-                    <div
+                    <button
                       key={pi}
-                      className="aspect-[4/3] bg-keva-gray-100 rounded-xl relative overflow-hidden"
+                      type="button"
+                      onClick={() => onImageClick?.(i, pi)}
+                      className="aspect-[4/3] bg-keva-gray-100 rounded-xl relative overflow-hidden cursor-pointer group"
                     >
                       <Image
                         src={img.url}
@@ -184,7 +228,7 @@ export default function ProjectTimeline({
                           `${projectTitle} - ${milestone.title} photo ${pi + 1}`
                         }
                         fill
-                        className="object-cover hover:scale-105 transition-transform duration-300"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       {img.caption && (
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 pt-6">
@@ -193,7 +237,14 @@ export default function ProjectTimeline({
                           </span>
                         </div>
                       )}
-                    </div>
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 rounded-full p-2">
+                          <svg className="w-5 h-5 text-keva-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </button>
                   ))}
                 </div>
               )}
