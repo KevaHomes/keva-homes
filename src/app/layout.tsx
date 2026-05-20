@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat, Inter } from "next/font/google";
+import { getSiteSettings } from "@/sanity/lib/queries";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -15,27 +16,33 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "KEVA Homes | Building Dreams into Reality",
-    template: "%s | KEVA Homes",
-  },
-  description:
-    "Family owned construction company in Bloomfield, NJ. Expert building contractor providing quality interior & exterior renovations, structural repairs, and custom construction services across North Jersey.",
-  keywords: [
-    "contractor",
-    "home renovation",
-    "construction",
-    "Bloomfield NJ",
-    "home improvement",
-    "KEVA Homes",
-  ],
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    siteName: "KEVA Homes",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const tagline = settings?.tagline ?? "Building Dreams into Reality";
+
+  return {
+    title: {
+      default: `KEVA Homes | ${tagline}`,
+      template: "%s | KEVA Homes",
+    },
+    description:
+      "Family owned construction company in Bloomfield, NJ. Expert building contractor providing quality interior & exterior renovations, structural repairs, and custom construction services across North Jersey.",
+    keywords: [
+      "contractor",
+      "home renovation",
+      "construction",
+      "Bloomfield NJ",
+      "home improvement",
+      "KEVA Homes",
+    ],
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      siteName: "KEVA Homes",
+      images: [{ url: "/images/logos/keva-logo.png", width: 800, height: 600 }],
+    },
+  };
+}
 
 const localBusinessJsonLd = {
   "@context": "https://schema.org",

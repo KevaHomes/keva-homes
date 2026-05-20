@@ -168,9 +168,14 @@ export default async function HomePage() {
                     <h3 className="font-heading text-lg font-bold text-keva-black mb-2">
                       {service.title}
                     </h3>
-                    <p className="text-keva-gray-600 text-sm leading-relaxed line-clamp-3">
-                      {service.description}
-                    </p>
+                    {service.description && (
+                      <TruncatedText
+                        text={service.description}
+                        limit={150}
+                        className="text-keva-gray-600 text-sm leading-relaxed"
+                        showQuotes={false}
+                      />
+                    )}
                   </div>
                 </FadeIn>
               ),

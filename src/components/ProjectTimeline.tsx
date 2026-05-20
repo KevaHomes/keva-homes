@@ -43,6 +43,7 @@ export default function ProjectTimeline({
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const timelineRef = useRef<HTMLDivElement>(null);
   const stickyTriggerRef = useRef<HTMLDivElement>(null);
+  const stickyEndRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const barHeightRef = useRef(0);
   const isScrollingTo = useRef(false);
@@ -72,7 +73,13 @@ export default function ProjectTimeline({
     if (!sentinel) return;
 
     const handleScroll = () => {
-      const shouldStick = sentinel.getBoundingClientRect().top < 0;
+      const pastStart = sentinel.getBoundingClientRect().top < 0;
+      const endEl = stickyEndRef.current;
+      const headerHeight = window.innerWidth >= 640 ? 80 : 64;
+      const beforeEnd = endEl
+        ? endEl.getBoundingClientRect().top > headerHeight + barHeightRef.current
+        : true;
+      const shouldStick = pastStart && beforeEnd;
       setIsStuck((prev) => (prev === shouldStick ? prev : shouldStick));
     };
 
@@ -294,6 +301,9 @@ export default function ProjectTimeline({
           );
         })}
       </div>
+
+      {/* End sentinel — bar detaches when this reaches the bar position */}
+      <div ref={stickyEndRef} className="h-px" />
     </div>
   );
 }

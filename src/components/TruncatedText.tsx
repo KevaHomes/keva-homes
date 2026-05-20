@@ -8,10 +8,12 @@ export default function TruncatedText({
   text,
   limit = CHAR_LIMIT,
   className,
+  showQuotes = true,
 }: {
   text: string;
   limit?: number;
   className?: string;
+  showQuotes?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const needsTruncation = text.length > limit;
@@ -19,7 +21,9 @@ export default function TruncatedText({
   return (
     <div>
       <p className={className}>
-        &ldquo;{expanded || !needsTruncation ? text : `${text.slice(0, limit).trimEnd()}...`}&rdquo;
+        {showQuotes && "“"}
+        {expanded || !needsTruncation ? text : `${text.slice(0, limit).trimEnd()}...`}
+        {showQuotes && "”"}
       </p>
       {needsTruncation && (
         <button
