@@ -124,7 +124,13 @@ export default async function ProjectDetailPage({
                         _key: string;
                         title: string;
                         gallery?: { asset: { _ref: string }; caption?: string }[];
-                        videos?: { url: string; caption?: string }[];
+                        videos?: {
+                          _key?: string;
+                          _type?: string;
+                          url?: string;
+                          caption?: string;
+                          videoUrl?: string;
+                        }[];
                         youtubeUrls?: string[];
                       }) => ({
                         ...m,

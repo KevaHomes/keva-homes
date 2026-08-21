@@ -39,8 +39,11 @@ export async function getProjectBySlug(slug: string) {
           caption
         },
         videos[] {
+          _key,
+          _type,
           url,
-          caption
+          caption,
+          "videoUrl": video.asset->url
         },
         youtubeUrls
       },

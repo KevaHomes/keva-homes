@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import clsx from "clsx";
+import VideoClip from "./VideoClip";
 
 type MilestoneImage = {
   url: string;
@@ -11,8 +12,11 @@ type MilestoneImage = {
 };
 
 type Video = {
-  url: string;
+  _key?: string;
+  _type?: string;
+  url?: string; // YouTube link
   caption?: string;
+  videoUrl?: string; // uploaded video file (Sanity CDN)
 };
 
 type Milestone = {
@@ -234,17 +238,29 @@ export default function ProjectTimeline({
                   )}
                 >
                   {allVideos.map((video, vi) => {
-                    const videoId = getYouTubeId(video.url);
+                    const videoTitle =
+                      video.caption ??
+                      `${projectTitle} - ${milestone.title} video ${vi + 1}`;
+
+                    if (video.videoUrl) {
+                      return (
+                        <VideoClip
+                          key={video._key ?? vi}
+                          src={video.videoUrl}
+                          caption={video.caption}
+                          title={videoTitle}
+                        />
+                      );
+                    }
+
+                    const videoId = video.url ? getYouTubeId(video.url) : undefined;
                     if (!videoId) return null;
                     return (
-                      <div key={vi}>
+                      <div key={video._key ?? vi}>
                         <div className="aspect-video rounded-xl overflow-hidden bg-keva-gray-100">
                           <iframe
                             src={`https://www.youtube.com/embed/${videoId}`}
-                            title={
-                              video.caption ??
-                              `${projectTitle} - ${milestone.title} video ${vi + 1}`
-                            }
+                            title={videoTitle}
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
                             className="w-full h-full"

@@ -100,12 +100,15 @@ export default defineType({
             }),
             defineField({
               name: "videos",
-              title: "YouTube Videos",
+              title: "Videos",
+              description:
+                "Add a YouTube link or upload a short video clip straight from your phone or computer.",
               type: "array",
               of: [
                 defineArrayMember({
                   type: "object",
                   name: "video",
+                  title: "YouTube Video",
                   fields: [
                     defineField({
                       name: "url",
@@ -125,6 +128,39 @@ export default defineType({
                       return {
                         title: title || subtitle || "Untitled video",
                         subtitle: title ? subtitle : undefined,
+                      };
+                    },
+                  },
+                }),
+                defineArrayMember({
+                  type: "object",
+                  name: "videoFile",
+                  title: "Video Upload",
+                  fields: [
+                    defineField({
+                      name: "video",
+                      title: "Video File",
+                      type: "file",
+                      description:
+                        "MP4 or iPhone (MOV) videos work best. Short clips under ~100MB are ideal so they load quickly for visitors.",
+                      options: { accept: "video/*" },
+                      validation: (rule) => rule.required(),
+                    }),
+                    defineField({
+                      name: "caption",
+                      title: "Caption",
+                      type: "string",
+                    }),
+                  ],
+                  preview: {
+                    select: {
+                      title: "caption",
+                      fileName: "video.asset.originalFilename",
+                    },
+                    prepare({ title, fileName }: { title?: string; fileName?: string }) {
+                      return {
+                        title: title || fileName || "Uploaded video",
+                        subtitle: title && fileName ? fileName : "Video upload",
                       };
                     },
                   },

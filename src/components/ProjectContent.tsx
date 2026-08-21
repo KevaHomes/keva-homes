@@ -14,7 +14,13 @@ type Milestone = {
   _key: string;
   title: string;
   gallery?: MilestoneImage[];
-  videos?: { url: string; caption?: string }[];
+  videos?: {
+    _key?: string;
+    _type?: string;
+    url?: string;
+    caption?: string;
+    videoUrl?: string;
+  }[];
   youtubeUrls?: string[];
 };
 
