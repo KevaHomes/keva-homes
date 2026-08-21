@@ -12,7 +12,7 @@ export async function getProjects() {
       status,
       isFeatured,
       coverImage,
-      "categories": categories[]->title,
+      "categories": array::unique(categories[]->title),
       youtubeUrls
     }
   `);
@@ -52,7 +52,7 @@ export async function getProjectBySlug(slug: string) {
         caption,
         phase
       },
-      "categories": categories[]->title,
+      "categories": array::unique(categories[]->title),
       youtubeUrls
     }
   `,
