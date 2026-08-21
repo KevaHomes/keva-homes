@@ -19,4 +19,7 @@ export default defineType({
       validation: (rule) => rule.required(),
     }),
   ],
+  preview: {
+    select: { title: "title", subtitle: "slug.current" },
+  },
 });
