@@ -10,6 +10,8 @@ export async function POST(req: NextRequest) {
 
   // Revalidate all pages since any content type could affect multiple pages
   revalidatePath("/", "layout");
+  // The sitemap is a route handler outside the layout tree, so refresh it separately
+  revalidatePath("/sitemap.xml");
 
   return NextResponse.json({ revalidated: true, now: Date.now() });
 }
