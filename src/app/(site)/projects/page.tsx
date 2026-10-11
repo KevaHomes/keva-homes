@@ -1,14 +1,17 @@
 export const revalidate = 60;
 
 import type { Metadata } from "next";
-import { Suspense } from "react";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd, openGraphFor } from "@/lib/seo";
 import { getProjects, getCategories } from "@/sanity/lib/queries";
 import ProjectsClient from "./ProjectsClient";
 
 export const metadata: Metadata = {
-  title: "Projects",
+  title: "Renovation & Construction Projects in North Jersey",
   description:
-    "Browse KEVA Homes portfolio of completed and ongoing construction projects across North New Jersey.",
+    "See KEVA Homes' completed and current projects across North Jersey: whole-home renovations, additions, exteriors, decks and new homes in Bloomfield, Whippany, Woodcliff Lake and more.",
+  alternates: { canonical: "/projects" },
+  openGraph: openGraphFor("/projects"),
 };
 
 export default async function ProjectsPage() {
@@ -20,8 +23,14 @@ export default async function ProjectsPage() {
     (c: { title: string }) => c.title,
   );
   return (
-    <Suspense>
+    <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Projects", path: "/projects" },
+        ])}
+      />
       <ProjectsClient projects={projects} categories={categories} />
-    </Suspense>
+    </>
   );
 }

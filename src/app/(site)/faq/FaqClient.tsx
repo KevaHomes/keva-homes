@@ -33,7 +33,7 @@ function FAQItem({
       <div
         className={clsx(
           "overflow-hidden transition-all duration-300 ease-in-out",
-          open ? "max-h-96 pb-5" : "max-h-0",
+          open ? "max-h-[48rem] pb-5" : "max-h-0",
         )}
       >
         <p className="text-keva-gray-600 leading-relaxed pr-8">{answer}</p>

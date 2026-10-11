@@ -1,6 +1,7 @@
 import project from "./project";
 import category from "./category";
 import service from "./service";
+import serviceArea from "./serviceArea";
 import faqItem from "./faqItem";
 import review from "./review";
 import contactSubmission from "./contactSubmission";
@@ -10,6 +11,7 @@ export const schemaTypes = [
   project,
   category,
   service,
+  serviceArea,
   faqItem,
   review,
   contactSubmission,

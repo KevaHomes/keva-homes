@@ -1,10 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Mail, MapPin, Clock, Send } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Send, ShieldCheck, Siren } from "lucide-react";
 import { submitContactForm } from "@/app/actions/contact";
+import { telHref } from "@/lib/phone";
 
-export default function ContactClient() {
+export type ContactInfo = {
+  phone: string;
+  tollFree: string;
+  email: string;
+  city: string;
+  areas: string;
+  hours: { days: string; hours: string }[];
+  emergencyNote: string;
+  hicNumber: string;
+  insurance: string;
+};
+
+export default function ContactClient({ info }: { info: ContactInfo }) {
   const [formState, setFormState] = useState({
     name: "",
     email: "",
@@ -193,17 +206,17 @@ export default function ContactClient() {
                   <div>
                     <h3 className="font-semibold text-keva-black">Phone</h3>
                     <a
-                      href="tel:9734444996"
+                      href={telHref(info.phone)}
                       className="text-keva-gray-600 hover:text-keva-orange transition-colors"
                     >
-                      (973) 444-4996
+                      {info.phone}
                     </a>
                     <br />
                     <a
-                      href="tel:8335382466"
+                      href={telHref(info.tollFree)}
                       className="text-keva-gray-600 hover:text-keva-orange transition-colors text-sm"
                     >
-                      833-KEVA-HOME
+                      {info.tollFree}
                     </a>
                   </div>
                 </div>
@@ -215,10 +228,10 @@ export default function ContactClient() {
                   <div>
                     <h3 className="font-semibold text-keva-black">Email</h3>
                     <a
-                      href="mailto:kevahomesllc@gmail.com"
+                      href={`mailto:${info.email}`}
                       className="text-keva-gray-600 hover:text-keva-orange transition-colors"
                     >
-                      kevahomesllc@gmail.com
+                      {info.email}
                     </a>
                   </div>
                 </div>
@@ -229,10 +242,9 @@ export default function ContactClient() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-keva-black">Location</h3>
-                    <p className="text-keva-gray-600">Bloomfield, NJ</p>
+                    <p className="text-keva-gray-600">{info.city}</p>
                     <p className="text-keva-gray-500 text-sm mt-1">
-                      Essex, Union, Morris, Bergen, Passaic & surrounding
-                      counties
+                      Serving {info.areas}
                     </p>
                   </div>
                 </div>
@@ -243,10 +255,39 @@ export default function ContactClient() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-keva-black">Hours</h3>
-                    <p className="text-keva-gray-600">Monday - Friday</p>
+                    {info.hours.map((h) => (
+                      <p key={h.days} className="text-keva-gray-600">
+                        {h.days}: {h.hours}
+                      </p>
+                    ))}
                     <p className="text-keva-gray-500 text-sm">
                       Call for appointment availability
                     </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-keva-orange/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Siren className="w-6 h-6 text-keva-orange" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-keva-black">Emergencies</h3>
+                    <p className="text-keva-gray-600 text-sm leading-relaxed">
+                      {info.emergencyNote}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-keva-orange/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <ShieldCheck className="w-6 h-6 text-keva-orange" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-keva-black">Licensed &amp; Insured</h3>
+                    <p className="text-keva-gray-600 text-sm">
+                      NJ Home Improvement Contractor Reg. #{info.hicNumber}
+                    </p>
+                    <p className="text-keva-gray-500 text-sm mt-1">{info.insurance}</p>
                   </div>
                 </div>
               </div>

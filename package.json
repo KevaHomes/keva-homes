@@ -16,6 +16,7 @@
     "@sanity/image-url": "^2.1.1",
     "@sanity/orderable-document-list": "^1.5.1",
     "@sanity/vision": "^5.25.0",
+    "@vercel/analytics": "^1.5.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.14.0",

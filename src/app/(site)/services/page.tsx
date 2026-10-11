@@ -2,38 +2,27 @@ export const revalidate = 60;
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Phone,
-  Home,
-  Building2,
-  Wrench,
-  Zap,
-  Paintbrush,
-  ClipboardCheck,
-} from "lucide-react";
+import { ArrowRight, Phone, MapPin } from "lucide-react";
+import ServiceIcon from "@/components/ServiceIcon";
+import JsonLd from "@/components/JsonLd";
+import { getBusiness, telHref } from "@/lib/business";
+import { breadcrumbJsonLd, openGraphFor } from "@/lib/seo";
 import { getServices, getSiteSettings, getProjects } from "@/sanity/lib/queries";
 
 export const metadata: Metadata = {
-  title: "Services",
+  title: "Construction & Remodeling Services in North Jersey",
   description:
-    "KEVA Homes offers complete construction services including interior & exterior renovations, structural repairs, energy efficiency upgrades, and custom renovations across North NJ.",
-};
-
-const iconMap: Record<string, React.ReactNode> = {
-  Home: <Home className="w-10 h-10" />,
-  Building2: <Building2 className="w-10 h-10" />,
-  Wrench: <Wrench className="w-10 h-10" />,
-  Zap: <Zap className="w-10 h-10" />,
-  Paintbrush: <Paintbrush className="w-10 h-10" />,
-  ClipboardCheck: <ClipboardCheck className="w-10 h-10" />,
+    "Whole-house renovations, additions, kitchens and baths, basements, roofing and siding, decks and hardscaping, new homes and commercial work across North Jersey.",
+  alternates: { canonical: "/services" },
+  openGraph: openGraphFor("/services"),
 };
 
 export default async function ServicesPage() {
-  const [services, settings, allProjects] = await Promise.all([
+  const [services, settings, allProjects, business] = await Promise.all([
     getServices(),
     getSiteSettings(),
     getProjects(),
+    getBusiness(),
   ]);
   const additionalServices = settings?.additionalServices ?? [];
 
@@ -46,16 +35,25 @@ export default async function ServicesPage() {
   }
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+        ])}
+      />
+
       {/* Hero */}
       <section className="bg-keva-black text-white py-20 sm:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="font-heading text-keva-orange font-bold mb-3">We Do It All</p>
           <h1 className="font-heading text-4xl sm:text-5xl font-black mb-4">
-            Services: We Do It{" "}
-            <span className="text-keva-orange">All</span>
+            Construction &amp; Remodeling{" "}
+            <span className="text-keva-orange">Services</span>
           </h1>
           <p className="text-keva-gray-400 text-lg max-w-2xl mx-auto">
-            From minor repairs to complete home transformations, KEVA Homes has
-            the expertise and dedication to bring your project to life.
+            From kitchens and additions to new homes and commercial renovations,
+            KEVA Homes handles projects of every size across North Jersey, with one
+            team from permits to final inspection.
           </p>
         </div>
       </section>
@@ -65,20 +63,25 @@ export default async function ServicesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {services.map((service: { _id: string; slug: string; icon: string; title: string; description: string }) => (
-              <div
+              <Link
                 key={service._id}
-                className="bg-keva-gray-50 rounded-2xl p-8 hover:shadow-lg transition-shadow group"
+                href={`/services/${service.slug}`}
+                className="flex flex-col bg-keva-gray-50 rounded-2xl p-8 hover:shadow-lg transition-shadow group"
               >
                 <div className="w-16 h-16 bg-keva-orange/10 rounded-2xl flex items-center justify-center text-keva-orange mb-6 group-hover:bg-keva-orange group-hover:text-white transition-colors">
-                  {iconMap[service.icon] ?? <Wrench className="w-10 h-10" />}
+                  <ServiceIcon name={service.icon} className="w-10 h-10" />
                 </div>
-                <h2 className="font-heading text-2xl font-bold text-keva-black mb-3">
+                <h2 className="font-heading text-2xl font-bold text-keva-black mb-3 group-hover:text-keva-orange transition-colors">
                   {service.title}
                 </h2>
-                <p className="text-keva-gray-600 leading-relaxed">
+                <p className="text-keva-gray-600 leading-relaxed mb-5">
                   {service.description}
                 </p>
-              </div>
+                <span className="mt-auto inline-flex items-center gap-2 text-keva-orange font-semibold">
+                  Learn more about {service.title.toLowerCase()}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </Link>
             ))}
           </div>
         </div>
@@ -124,9 +127,17 @@ export default async function ServicesPage() {
             <h2 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-3">
               Serving North New Jersey
             </h2>
-            <p className="text-keva-gray-400 mb-2">
-              {settings?.serviceAreas ?? "Essex, Union, Morris, Bergen, Passaic & surrounding counties"}
+            <p className="text-keva-gray-400 mb-6">
+              {business.counties.map((c) => c.county).join(" · ")}
             </p>
+            <Link
+              href="/service-areas"
+              className="inline-flex items-center gap-2 text-keva-orange font-semibold hover:gap-3 transition-all"
+            >
+              <MapPin className="w-5 h-5" />
+              See the towns we serve
+              <ArrowRight className="w-5 h-5" />
+            </Link>
           </div>
         </div>
       </section>
@@ -149,11 +160,11 @@ export default async function ServicesPage() {
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
-              href="tel:9734444996"
+              href={telHref(business.phone)}
               className="inline-flex items-center gap-2 border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-white/10 transition-colors"
             >
               <Phone className="w-5 h-5" />
-              {settings?.phone ?? "(973) 444-4996"}
+              {business.phone}
             </a>
           </div>
         </div>

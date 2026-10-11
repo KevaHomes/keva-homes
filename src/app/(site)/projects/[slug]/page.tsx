@@ -1,12 +1,15 @@
 export const revalidate = 60;
 
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Calendar, ArrowLeft, ArrowRight, Tag } from "lucide-react";
+import { MapPin, Calendar, ArrowLeft, ArrowRight, Tag, CheckCircle2, Wrench } from "lucide-react";
 import { getProjectBySlug, getProjectSlugs, getProjects } from "@/sanity/lib/queries";
 import { urlFor } from "@/sanity/lib/image";
 import ProjectContent from "@/components/ProjectContent";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd, openGraphFor } from "@/lib/seo";
 
 export async function generateStaticParams() {
   const slugs = await getProjectSlugs();
@@ -17,13 +20,23 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
-}) {
+}): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) return { title: "Project Not Found" };
+  const title = `${project.title} - ${project.location}`;
+  const path = `/projects/${project.slug}`;
   return {
-    title: `${project.title} - ${project.location}`,
+    title,
     description: project.description,
+    alternates: { canonical: path },
+    openGraph: openGraphFor(path, {
+      title: `${title} | KEVA Homes`,
+      description: project.description,
+      image: project.coverImage
+        ? { url: urlFor(project.coverImage).width(1200).height(630).url(), width: 1200, height: 630, alt: title }
+        : undefined,
+    }),
   };
 }
 
@@ -44,8 +57,19 @@ export default async function ProjectDetailPage({
     .filter((p: { slug: string }) => p.slug !== project.slug)
     .slice(0, 3);
 
+  const scope: string[] = project.scope ?? [];
+  const services: { title: string; slug: string }[] = project.services ?? [];
+
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Projects", path: "/projects" },
+          { name: project.title, path: `/projects/${project.slug}` },
+        ])}
+      />
+
       {/* Hero */}
       <section className="relative bg-keva-black text-white py-20 sm:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -86,7 +110,7 @@ export default async function ProjectDetailPage({
               <div className="flex-shrink-0 w-24 sm:w-36 md:w-48 lg:w-56 aspect-[4/3] rounded-xl overflow-hidden border-2 border-white/10">
                 <Image
                   src={urlFor(project.coverImage).width(400).height(300).url()}
-                  alt={project.title}
+                  alt={`${project.title} in ${project.location}`}
                   width={400}
                   height={300}
                   className="object-cover w-full h-full"
@@ -108,6 +132,22 @@ export default async function ProjectDetailPage({
               <p className="text-keva-gray-600 leading-relaxed text-lg mb-8">
                 {project.description}
               </p>
+
+              {scope.length > 0 && (
+                <div className="mb-10">
+                  <h3 className="font-heading text-xl font-bold text-keva-black mb-4">
+                    What We Did
+                  </h3>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {scope.map((item) => (
+                      <li key={item} className="flex items-start gap-3 text-keva-gray-700">
+                        <CheckCircle2 className="w-5 h-5 text-keva-orange flex-shrink-0 mt-0.5" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Milestone Timeline (new) or Legacy Gallery/Videos (fallback) */}
               {project.milestones && project.milestones.length > 0 ? (
@@ -143,7 +183,7 @@ export default async function ProjectDetailPage({
                           })),
                       }),
                     )}
-                    projectTitle={project.title}
+                    projectTitle={`${project.title} in ${project.location}`}
                   />
                 </div>
               ) : (
@@ -240,6 +280,26 @@ export default async function ProjectDetailPage({
                         {project.season}
                       </dd>
                     </div>
+                    {project.projectSize && (
+                      <div>
+                        <dt className="text-xs text-keva-gray-500 uppercase tracking-wide">
+                          Size
+                        </dt>
+                        <dd className="text-keva-black font-medium">
+                          {project.projectSize}
+                        </dd>
+                      </div>
+                    )}
+                    {project.duration && (
+                      <div>
+                        <dt className="text-xs text-keva-gray-500 uppercase tracking-wide">
+                          Duration
+                        </dt>
+                        <dd className="text-keva-black font-medium">
+                          {project.duration}
+                        </dd>
+                      </div>
+                    )}
                     <div>
                       <dt className="text-xs text-keva-gray-500 uppercase tracking-wide">
                         Status
@@ -250,6 +310,28 @@ export default async function ProjectDetailPage({
                     </div>
                   </dl>
                 </div>
+
+                {services.length > 0 && (
+                  <div className="bg-keva-gray-50 rounded-2xl p-6">
+                    <h3 className="font-heading font-bold text-keva-black mb-3 flex items-center gap-2">
+                      <Wrench className="w-5 h-5 text-keva-orange" />
+                      Services on This Project
+                    </h3>
+                    <ul className="space-y-2">
+                      {services.map((s) => (
+                        <li key={s.slug}>
+                          <Link
+                            href={`/services/${s.slug}`}
+                            className="inline-flex items-center gap-1 text-sm font-medium text-keva-gray-700 hover:text-keva-orange transition-colors"
+                          >
+                            {s.title}
+                            <ArrowRight className="w-4 h-4" />
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 <div className="bg-keva-gray-50 rounded-2xl p-6">
                   <h3 className="font-heading font-bold text-keva-black mb-3 flex items-center gap-2">
@@ -299,7 +381,7 @@ export default async function ProjectDetailPage({
                     {rp.coverImage && (
                       <Image
                         src={urlFor(rp.coverImage).width(600).height(450).url()}
-                        alt={rp.title}
+                        alt={`${rp.title} in ${rp.location}`}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />

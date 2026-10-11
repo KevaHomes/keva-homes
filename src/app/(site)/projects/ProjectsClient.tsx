@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,6 +28,26 @@ const statusFilters = [
   { value: "completed", label: "Completed" },
 ];
 
+// Reads ?status= / ?category= from the URL. Kept in its own Suspense boundary so the
+// project grid itself is still rendered into the page HTML (search engines and AI tools
+// read that HTML without running JavaScript).
+function FilterSync({
+  onStatus,
+  onCategory,
+}: {
+  onStatus: (status: string) => void;
+  onCategory: (category: string) => void;
+}) {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const status = searchParams.get("status");
+    const category = searchParams.get("category");
+    onStatus(status && statusFilters.some((f) => f.value === status) ? status : "all");
+    onCategory(category ?? "");
+  }, [searchParams, onStatus, onCategory]);
+  return null;
+}
+
 export default function ProjectsClient({
   projects,
   categories,
@@ -35,24 +55,14 @@ export default function ProjectsClient({
   projects: Project[];
   categories: string[];
 }) {
-  const searchParams = useSearchParams();
-
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Read initial filters from URL search params
-  useEffect(() => {
-    const status = searchParams.get("status");
-    const category = searchParams.get("category");
-    if (status && statusFilters.some((f) => f.value === status)) {
-      setStatusFilter(status);
-    }
-    if (category) {
-      setCategoryFilter(category);
-      setShowFilters(true);
-    }
-  }, [searchParams]);
+  const applyCategory = useCallback((category: string) => {
+    setCategoryFilter(category);
+    if (category) setShowFilters(true);
+  }, []);
 
   const filtered = useMemo(() => {
     const matched = projects.filter((p) => {
@@ -78,6 +88,9 @@ export default function ProjectsClient({
 
   return (
     <>
+      <Suspense fallback={null}>
+        <FilterSync onStatus={setStatusFilter} onCategory={applyCategory} />
+      </Suspense>
       <section className="bg-keva-black text-white py-20 sm:py-28">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="font-heading text-4xl sm:text-5xl font-black mb-4">
@@ -162,7 +175,7 @@ export default function ProjectsClient({
                     {project.coverImage && (
                       <Image
                         src={urlFor(project.coverImage).width(600).height(450).url()}
-                        alt={project.title}
+                        alt={`${project.title} in ${project.location}`}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />

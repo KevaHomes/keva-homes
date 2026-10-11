@@ -26,6 +26,26 @@ export default defineType({
       rows: 4,
     }),
     defineField({
+      name: "scope",
+      title: "What We Did",
+      type: "array",
+      description:
+        'A short list of the work on this job, e.g. "Gutted and rebuilt the first floor", "New kitchen with quartz countertops".',
+      of: [defineArrayMember({ type: "string" })],
+    }),
+    defineField({
+      name: "projectSize",
+      title: "Project Size",
+      type: "string",
+      description: 'Optional, e.g. "1,800 sq ft"',
+    }),
+    defineField({
+      name: "duration",
+      title: "How Long It Took",
+      type: "string",
+      description: 'Optional, e.g. "About 4 months"',
+    }),
+    defineField({
       name: "location",
       title: "Location",
       type: "string",

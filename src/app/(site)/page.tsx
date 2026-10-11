@@ -1,16 +1,11 @@
 export const revalidate = 60;
 
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import {
   Phone,
   ArrowRight,
-  Home,
-  Building2,
-  Wrench,
-  Zap,
-  Paintbrush,
-  ClipboardCheck,
   Star,
   MapPin,
   Users,
@@ -21,6 +16,10 @@ import { urlFor } from "@/sanity/lib/image";
 import FadeIn from "@/components/FadeIn";
 import SectionNav from "@/components/SectionNav";
 import TruncatedText from "@/components/TruncatedText";
+import ServiceIcon from "@/components/ServiceIcon";
+import JsonLd from "@/components/JsonLd";
+import { openGraphFor } from "@/lib/seo";
+import { getBusiness, telHref, BUSINESS_ID, SITE_URL } from "@/lib/business";
 import {
   getProjects,
   getServices,
@@ -28,13 +27,11 @@ import {
   getSiteSettings,
 } from "@/sanity/lib/queries";
 
-const iconMap: Record<string, React.ReactNode> = {
-  Home: <Home className="w-8 h-8" />,
-  Building2: <Building2 className="w-8 h-8" />,
-  Wrench: <Wrench className="w-8 h-8" />,
-  Zap: <Zap className="w-8 h-8" />,
-  Paintbrush: <Paintbrush className="w-8 h-8" />,
-  ClipboardCheck: <ClipboardCheck className="w-8 h-8" />,
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: openGraphFor("/", {
+    title: "KEVA Homes | General Contractor & Home Remodeling in North Jersey",
+  }),
 };
 
 const aboutIconMap: Record<string, React.ReactNode> = {
@@ -44,12 +41,14 @@ const aboutIconMap: Record<string, React.ReactNode> = {
 };
 
 export default async function HomePage() {
-  const [allProjects, allServices, reviews, settings] = await Promise.all([
+  const [allProjects, allServices, reviews, settings, business] = await Promise.all([
     getProjects(),
     getServices(),
     getApprovedReviews(),
     getSiteSettings(),
+    getBusiness(),
   ]);
+  const homeServices = allServices.slice(0, 6);
 
   const featuredProjects = allProjects
     .filter((p: { isFeatured?: boolean }) => p.isFeatured)
@@ -57,6 +56,17 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "@id": `${SITE_URL}/#website`,
+          url: `${SITE_URL}/`,
+          name: business.name,
+          publisher: { "@id": BUSINESS_ID },
+        }}
+      />
+
       {/* Sticky Section Nav — always visible, sticks below header on scroll */}
       <SectionNav />
 
@@ -71,16 +81,19 @@ export default async function HomePage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-keva-orange/10 border border-keva-orange/20 rounded-full text-keva-orange text-sm font-medium mb-6">
               <MapPin className="w-4 h-4" />
-              Serving North New Jersey
+              Family-owned in {business.city} since {business.foundedYear}
             </div>
+            <p className="font-heading text-keva-orange text-lg sm:text-xl font-bold mb-3">
+              {business.tagline}
+            </p>
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6">
-              Building Dreams
-              <span className="text-keva-orange"> into Reality</span>
+              North Jersey General Contractor for{" "}
+              <span className="text-keva-orange">Renovations, Additions &amp; New Homes</span>
             </h1>
             <p className="text-lg sm:text-xl text-keva-gray-400 mb-8 max-w-2xl">
-              Expert building contractor providing quality construction services.
-              From interior renovations to complete home transformations — we do it
-              all.
+              KEVA Homes manages your project from planning and permits through
+              construction, inspections and completion, with one accountable team
+              serving {business.serviceAreasSummary}.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
@@ -91,15 +104,15 @@ export default async function HomePage() {
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <a
-                href="tel:9734444996"
+                href={telHref(business.phone)}
                 className="inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-8 py-4 rounded-xl text-lg font-bold hover:border-keva-orange hover:text-keva-orange transition-colors"
               >
                 <Phone className="w-5 h-5" />
-                {settings?.phone ?? "(973) 444-4996"}
+                {business.phone}
               </a>
             </div>
             <p className="mt-4 text-keva-gray-500 text-sm">
-              Or call toll-free: {settings?.tollFree ?? "833-KEVA-HOME"}
+              Or call toll-free: {business.tollFree}
             </p>
           </div>
         </div>
@@ -112,9 +125,15 @@ export default async function HomePage() {
             <h2 className="font-heading text-3xl sm:text-4xl font-bold text-keva-black mb-4">
               About <span className="text-keva-orange">Us</span>
             </h2>
-            <p className="text-keva-gray-600 max-w-2xl mx-auto">
-              A family owned and operated construction business dedicated to
-              quality and customer satisfaction.
+            <p className="text-keva-gray-600 max-w-3xl mx-auto leading-relaxed">
+              KEVA Homes is a family-owned and operated general contractor based
+              in Bloomfield, New Jersey, serving homeowners and commercial clients
+              throughout Essex, Union, Morris, Bergen, Passaic and surrounding North
+              Jersey counties. We manage projects from planning and permitting
+              through construction, inspections and completion. Our work includes
+              whole-home renovations, kitchens, bathrooms, additions, roofing,
+              siding, decks, structural repairs, exterior renovations, new
+              construction and commercial improvements.
             </p>
           </FadeIn>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -152,7 +171,7 @@ export default async function HomePage() {
             </p>
           </FadeIn>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allServices.map(
+            {homeServices.map(
               (service: {
                 _id: string;
                 slug: string;
@@ -161,22 +180,26 @@ export default async function HomePage() {
                 description: string;
               }, i: number) => (
                 <FadeIn key={service._id} delay={i * 0.08}>
-                  <div className="bg-white rounded-2xl p-6 hover:shadow-lg transition-all hover:-translate-y-1 group h-full">
+                  <Link
+                    href={`/services/${service.slug}`}
+                    className="flex flex-col bg-white rounded-2xl p-6 hover:shadow-lg transition-all hover:-translate-y-1 group h-full"
+                  >
                     <div className="w-14 h-14 bg-keva-orange/10 rounded-xl flex items-center justify-center text-keva-orange mb-4 group-hover:bg-keva-orange group-hover:text-white transition-colors">
-                      {iconMap[service.icon] ?? <Wrench className="w-8 h-8" />}
+                      <ServiceIcon name={service.icon} className="w-8 h-8" />
                     </div>
-                    <h3 className="font-heading text-lg font-bold text-keva-black mb-2">
+                    <h3 className="font-heading text-lg font-bold text-keva-black mb-2 group-hover:text-keva-orange transition-colors">
                       {service.title}
                     </h3>
                     {service.description && (
-                      <TruncatedText
-                        text={service.description}
-                        limit={150}
-                        className="text-keva-gray-600 text-sm leading-relaxed"
-                        showQuotes={false}
-                      />
+                      <p className="text-keva-gray-600 text-sm leading-relaxed mb-4">
+                        {service.description}
+                      </p>
                     )}
-                  </div>
+                    <span className="mt-auto inline-flex items-center gap-1 text-keva-orange text-sm font-semibold">
+                      Learn more
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </Link>
                 </FadeIn>
               ),
             )}
@@ -343,11 +366,11 @@ export default async function HomePage() {
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
-              href="tel:9734444996"
+              href={telHref(business.phone)}
               className="inline-flex items-center gap-2 border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-white/10 transition-colors"
             >
               <Phone className="w-5 h-5" />
-              {settings?.phone ?? "(973) 444-4996"}
+              {business.phone}
             </a>
           </div>
         </FadeIn>

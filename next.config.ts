@@ -12,6 +12,12 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        // Old GoDaddy homepage URL, still indexed by search engines
+        source: "/home",
+        destination: "/",
+        permanent: true,
+      },
+      {
         source: "/lyndhurt-452-3",
         destination: "/projects/lyndhurst-nj-renovation",
         permanent: true,
