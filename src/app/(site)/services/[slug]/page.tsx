@@ -115,30 +115,32 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       {faqs.length > 0 && <JsonLd data={faqJsonLd(faqs)} />}
 
       {/* Hero */}
-      <section className="bg-keva-black text-white py-16 sm:py-24">
+      <section className="bg-keva-black text-white py-10 sm:py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumbs items={crumbs} />
           <div className="max-w-3xl">
-            <div className="w-14 h-14 bg-keva-orange/15 rounded-xl flex items-center justify-center text-keva-orange mb-6">
-              <ServiceIcon name={service.icon} className="w-8 h-8" />
+            <div className="flex items-center gap-4 mb-3">
+              <div className="hidden sm:flex w-12 h-12 flex-shrink-0 bg-keva-orange/15 rounded-xl items-center justify-center text-keva-orange">
+                <ServiceIcon name={service.icon} className="w-6 h-6" />
+              </div>
+              <h1 className="font-heading text-3xl sm:text-4xl font-black leading-tight">
+                {service.headline || service.title}
+              </h1>
             </div>
-            <h1 className="font-heading text-4xl sm:text-5xl font-black leading-tight mb-5">
-              {service.headline || service.title}
-            </h1>
             {service.description && (
-              <p className="text-keva-gray-400 text-lg sm:text-xl mb-8">{service.description}</p>
+              <p className="text-keva-gray-400 text-base sm:text-lg mb-6">{service.description}</p>
             )}
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center gap-2 bg-keva-orange text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-keva-orange-600 transition-colors"
+                className="inline-flex items-center justify-center gap-2 bg-keva-orange text-white px-6 py-3 rounded-xl text-base font-bold hover:bg-keva-orange-600 transition-colors"
               >
                 Get a Free Consultation
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <a
                 href={telHref(business.phone)}
-                className="inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-8 py-4 rounded-xl text-lg font-bold hover:border-keva-orange hover:text-keva-orange transition-colors"
+                className="inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-6 py-3 rounded-xl text-base font-bold hover:border-keva-orange hover:text-keva-orange transition-colors"
               >
                 <Phone className="w-5 h-5" />
                 {business.phone}

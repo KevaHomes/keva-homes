@@ -77,43 +77,43 @@ export default async function HomePage() {
           <div className="absolute top-20 right-20 w-96 h-96 bg-keva-orange rounded-full blur-3xl" />
           <div className="absolute bottom-20 left-20 w-64 h-64 bg-keva-orange rounded-full blur-3xl" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-keva-orange/10 border border-keva-orange/20 rounded-full text-keva-orange text-sm font-medium mb-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
+          <div className="max-w-5xl">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-keva-orange/10 border border-keva-orange/20 rounded-full text-keva-orange text-xs sm:text-sm font-medium mb-4">
               <MapPin className="w-4 h-4" />
               Family-owned in {business.city} since {business.foundedYear}
             </div>
-            <p className="font-heading text-keva-orange text-lg sm:text-xl font-bold mb-3">
+            <p className="font-heading text-keva-orange text-base sm:text-lg font-bold mb-2">
               {business.tagline}
             </p>
-            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6">
+            <h1 className="font-heading text-3xl sm:text-4xl lg:text-[2.75rem] font-black leading-tight mb-4">
               North Jersey General Contractor for{" "}
               <span className="text-keva-orange">Renovations, Additions &amp; New Homes</span>
             </h1>
-            <p className="text-lg sm:text-xl text-keva-gray-400 mb-8 max-w-2xl">
+            <p className="text-base sm:text-lg text-keva-gray-400 mb-6 max-w-3xl">
               KEVA Homes manages your project from planning and permits through
               construction, inspections and completion, with one accountable team
               serving {business.serviceAreasSummary}.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center gap-2 bg-keva-orange text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-keva-orange-600 transition-colors"
+                className="inline-flex items-center justify-center gap-2 bg-keva-orange text-white px-6 py-3 rounded-xl text-base font-bold hover:bg-keva-orange-600 transition-colors"
               >
                 Get a Quote Now
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <a
                 href={telHref(business.phone)}
-                className="inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-8 py-4 rounded-xl text-lg font-bold hover:border-keva-orange hover:text-keva-orange transition-colors"
+                className="inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-6 py-3 rounded-xl text-base font-bold hover:border-keva-orange hover:text-keva-orange transition-colors"
               >
                 <Phone className="w-5 h-5" />
                 {business.phone}
               </a>
+              <p className="text-keva-gray-500 text-sm text-center sm:text-left">
+                Or call toll-free: {business.tollFree}
+              </p>
             </div>
-            <p className="mt-4 text-keva-gray-500 text-sm">
-              Or call toll-free: {business.tollFree}
-            </p>
           </div>
         </div>
       </section>

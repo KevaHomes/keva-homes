@@ -92,28 +92,28 @@ export default async function ServiceAreaPage({ params }: { params: Promise<{ sl
       />
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
 
-      <section className="bg-keva-black text-white py-16 sm:py-24">
+      <section className="bg-keva-black text-white py-10 sm:py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumbs items={crumbs} />
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-keva-orange/10 border border-keva-orange/20 rounded-full text-keva-orange text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-keva-orange/10 border border-keva-orange/20 rounded-full text-keva-orange text-xs sm:text-sm font-medium mb-4">
               <MapPin className="w-4 h-4" />
               {area.county ? `${area.county}, NJ` : "North Jersey"}
             </div>
-            <h1 className="font-heading text-4xl sm:text-5xl font-black leading-tight mb-6">
+            <h1 className="font-heading text-3xl sm:text-4xl font-black leading-tight mb-5">
               {area.headline || `General Contractor in ${area.title}`}
             </h1>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center gap-2 bg-keva-orange text-white px-8 py-4 rounded-xl text-lg font-bold hover:bg-keva-orange-600 transition-colors"
+                className="inline-flex items-center justify-center gap-2 bg-keva-orange text-white px-6 py-3 rounded-xl text-base font-bold hover:bg-keva-orange-600 transition-colors"
               >
                 Get a Free Consultation
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <a
                 href={telHref(business.phone)}
-                className="inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-8 py-4 rounded-xl text-lg font-bold hover:border-keva-orange hover:text-keva-orange transition-colors"
+                className="inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-6 py-3 rounded-xl text-base font-bold hover:border-keva-orange hover:text-keva-orange transition-colors"
               >
                 <Phone className="w-5 h-5" />
                 {business.phone}

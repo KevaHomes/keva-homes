@@ -37,12 +37,12 @@ export default async function ServiceAreasPage() {
         ])}
       />
 
-      <section className="bg-keva-black text-white py-20 sm:py-28">
+      <section className="bg-keva-black text-white py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="font-heading text-4xl sm:text-5xl font-black mb-4">
+          <h1 className="font-heading text-3xl sm:text-4xl font-black mb-3">
             Areas We Serve in <span className="text-keva-orange">North Jersey</span>
           </h1>
-          <p className="text-keva-gray-400 text-lg max-w-2xl mx-auto">
+          <p className="text-keva-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
             KEVA Homes is based in {business.city} and works throughout{" "}
             {business.serviceAreasSummary}. These are the towns where we work most
             often. Don&apos;t see yours? Give us a call at{" "}

@@ -43,14 +43,14 @@ export default async function ServicesPage() {
       />
 
       {/* Hero */}
-      <section className="bg-keva-black text-white py-20 sm:py-28">
+      <section className="bg-keva-black text-white py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="font-heading text-keva-orange font-bold mb-3">We Do It All</p>
-          <h1 className="font-heading text-4xl sm:text-5xl font-black mb-4">
+          <p className="font-heading text-keva-orange text-sm sm:text-base font-bold mb-2">We Do It All</p>
+          <h1 className="font-heading text-3xl sm:text-4xl font-black mb-3">
             Construction &amp; Remodeling{" "}
             <span className="text-keva-orange">Services</span>
           </h1>
-          <p className="text-keva-gray-400 text-lg max-w-2xl mx-auto">
+          <p className="text-keva-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
             From kitchens and additions to new homes and commercial renovations,
             KEVA Homes handles projects of every size across North Jersey, with one
             team from permits to final inspection.
