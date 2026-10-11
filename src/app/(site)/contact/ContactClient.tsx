@@ -4,6 +4,13 @@ import { useState } from "react";
 import { Phone, Mail, MapPin, Clock, Send, ShieldCheck, Siren } from "lucide-react";
 import { submitContactForm } from "@/app/actions/contact";
 import { telHref } from "@/lib/phone";
+import { CURRENT_PROJECT_TYPES, REFERRAL_SOURCES } from "@/lib/contactOptions";
+
+const REFERRAL_DETAIL_PROMPTS: Record<string, string> = {
+  "ai-assistant": "Which one? (ChatGPT, Gemini, Perplexity...)",
+  referral: "Who can we thank?",
+  other: "Where did you hear about us?",
+};
 
 export type ContactInfo = {
   phone: string;
@@ -23,6 +30,8 @@ export default function ContactClient({ info }: { info: ContactInfo }) {
     email: "",
     phone: "",
     projectType: "",
+    referralSource: "",
+    referralDetail: "",
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
@@ -128,36 +137,80 @@ export default function ContactClient({ info }: { info: ContactInfo }) {
                       />
                     </div>
                   </div>
-                  <div>
-                    <label
-                      htmlFor="projectType"
-                      className="block text-sm font-medium text-keva-gray-700 mb-1"
-                    >
-                      Project Type
-                    </label>
-                    <select
-                      id="projectType"
-                      value={formState.projectType}
-                      onChange={(e) =>
-                        setFormState({
-                          ...formState,
-                          projectType: e.target.value,
-                        })
-                      }
-                      className="w-full px-4 py-3 rounded-xl border border-keva-gray-300 focus:border-keva-orange focus:ring-2 focus:ring-keva-orange/20 outline-none transition-all bg-white"
-                    >
-                      <option value="">Select a project type...</option>
-                      <option value="interior">Interior Renovation</option>
-                      <option value="exterior">Exterior Renovation</option>
-                      <option value="addition">Addition</option>
-                      <option value="new-construction">
-                        New Construction
-                      </option>
-                      <option value="structural">Structural Repair</option>
-                      <option value="custom">Custom Project</option>
-                      <option value="other">Other</option>
-                    </select>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label
+                        htmlFor="projectType"
+                        className="block text-sm font-medium text-keva-gray-700 mb-1"
+                      >
+                        Project Type
+                      </label>
+                      <select
+                        id="projectType"
+                        value={formState.projectType}
+                        onChange={(e) =>
+                          setFormState({
+                            ...formState,
+                            projectType: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-3 rounded-xl border border-keva-gray-300 focus:border-keva-orange focus:ring-2 focus:ring-keva-orange/20 outline-none transition-all bg-white"
+                      >
+                        <option value="">Select a project type...</option>
+                        {CURRENT_PROJECT_TYPES.map((o) => (
+                          <option key={o.value} value={o.value}>
+                            {o.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="referralSource"
+                        className="block text-sm font-medium text-keva-gray-700 mb-1"
+                      >
+                        How did you hear about us?
+                      </label>
+                      <select
+                        id="referralSource"
+                        value={formState.referralSource}
+                        onChange={(e) =>
+                          setFormState({
+                            ...formState,
+                            referralSource: e.target.value,
+                            referralDetail: "",
+                          })
+                        }
+                        className="w-full px-4 py-3 rounded-xl border border-keva-gray-300 focus:border-keva-orange focus:ring-2 focus:ring-keva-orange/20 outline-none transition-all bg-white"
+                      >
+                        <option value="">Select one (optional)...</option>
+                        {REFERRAL_SOURCES.map((o) => (
+                          <option key={o.value} value={o.value}>
+                            {o.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
+                  {REFERRAL_DETAIL_PROMPTS[formState.referralSource] && (
+                    <div>
+                      <label
+                        htmlFor="referralDetail"
+                        className="block text-sm font-medium text-keva-gray-700 mb-1"
+                      >
+                        {REFERRAL_DETAIL_PROMPTS[formState.referralSource]}
+                      </label>
+                      <input
+                        type="text"
+                        id="referralDetail"
+                        value={formState.referralDetail}
+                        onChange={(e) =>
+                          setFormState({ ...formState, referralDetail: e.target.value })
+                        }
+                        className="w-full px-4 py-3 rounded-xl border border-keva-gray-300 focus:border-keva-orange focus:ring-2 focus:ring-keva-orange/20 outline-none transition-all"
+                      />
+                    </div>
+                  )}
                   <div>
                     <label
                       htmlFor="message"

@@ -79,13 +79,15 @@ export default async function HomePage() {
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
           <div className="max-w-5xl">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-keva-orange/10 border border-keva-orange/20 rounded-full text-keva-orange text-xs sm:text-sm font-medium mb-4">
-              <MapPin className="w-4 h-4" />
-              Family-owned in {business.city} since {business.foundedYear}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3">
+              <p className="font-heading text-keva-orange text-base sm:text-lg font-bold">
+                {business.tagline}
+              </p>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-keva-orange/10 border border-keva-orange/20 rounded-full text-keva-orange text-xs sm:text-sm font-medium">
+                <MapPin className="w-4 h-4" />
+                Family-owned in {business.city} since {business.foundedYear}
+              </span>
             </div>
-            <p className="font-heading text-keva-orange text-base sm:text-lg font-bold mb-2">
-              {business.tagline}
-            </p>
             <h1 className="font-heading text-3xl sm:text-4xl lg:text-[2.75rem] font-black leading-tight mb-4">
               North Jersey General Contractor for{" "}
               <span className="text-keva-orange">Renovations, Additions &amp; New Homes</span>

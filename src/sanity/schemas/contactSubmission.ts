@@ -1,4 +1,5 @@
 import { defineType, defineField } from "sanity";
+import { PROJECT_TYPES, REFERRAL_SOURCES } from "../../lib/contactOptions";
 
 export default defineType({
   name: "contactSubmission",
@@ -23,6 +24,18 @@ export default defineType({
     defineField({
       name: "projectType",
       title: "Project Type",
+      type: "string",
+      options: { list: PROJECT_TYPES.map((o) => ({ title: o.label, value: o.value })) },
+    }),
+    defineField({
+      name: "referralSource",
+      title: "How They Heard About Us",
+      type: "string",
+      options: { list: REFERRAL_SOURCES.map((o) => ({ title: o.label, value: o.value })) },
+    }),
+    defineField({
+      name: "referralDetail",
+      title: "Referral Details",
       type: "string",
     }),
     defineField({
