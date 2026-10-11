@@ -71,18 +71,25 @@ export default async function ProjectDetailPage({
       />
 
       {/* Hero */}
-      <section className="relative bg-keva-black text-white py-20 sm:py-28">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-keva-black text-white">
+        <div className="absolute inset-0 bg-gradient-to-br from-keva-black via-keva-gray-900 to-keva-black" />
+        <div className="absolute -top-48 -right-32 w-[44rem] h-[44rem] rounded-full bg-keva-orange/20 blur-[120px]" />
+        <div className="absolute -bottom-56 -left-40 w-[34rem] h-[34rem] rounded-full bg-keva-orange/10 blur-[110px]" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-keva-orange/50 to-transparent" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
           <Link
             href="/projects"
-            className="inline-flex items-center gap-2 text-keva-gray-400 hover:text-keva-orange transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-keva-gray-400 hover:text-keva-orange transition-colors mb-6 lg:mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Projects
           </Link>
-          <div className="flex items-start gap-8">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-4">
+          <div
+            className={`grid grid-cols-1 gap-10 items-center ${project.coverImage ? "lg:grid-cols-[1fr_1.1fr] lg:gap-14" : ""}`}
+          >
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-5">
                 <span className={`text-xs font-bold px-3 py-1 rounded-full text-white uppercase ${project.status === "current" ? "bg-green-500" : "bg-keva-gray-600"}`}>
                   {project.status}
                 </span>
@@ -92,29 +99,53 @@ export default async function ProjectDetailPage({
                   </span>
                 )}
               </div>
-              <h1 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-black mb-4">
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6">
                 {project.title}
               </h1>
-              <div className="flex flex-wrap items-center gap-4 text-keva-gray-400">
-                <span className="inline-flex items-center gap-1.5">
-                  <MapPin className="w-5 h-5" />
+              <div className="flex flex-wrap items-center gap-3 mb-8">
+                <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-keva-gray-300 text-sm">
+                  <MapPin className="w-4 h-4 text-keva-orange" />
                   {project.location}
                 </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <Calendar className="w-5 h-5" />
-                  {project.season}
-                </span>
+                {project.season && (
+                  <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-keva-gray-300 text-sm">
+                    <Calendar className="w-4 h-4 text-keva-orange" />
+                    {project.season}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                {project.milestones && project.milestones.length > 0 && (
+                  <a
+                    href="#journey"
+                    className="inline-flex items-center justify-center gap-2 bg-keva-orange text-white px-6 py-3 rounded-xl font-bold hover:bg-keva-orange-600 transition-colors"
+                  >
+                    Follow the Project Journey
+                    <ArrowRight className="w-5 h-5" />
+                  </a>
+                )}
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-white/20 text-white px-6 py-3 rounded-xl font-bold hover:border-keva-orange hover:text-keva-orange transition-colors"
+                >
+                  Start Your Own Project
+                </Link>
               </div>
             </div>
             {project.coverImage && (
-              <div className="flex-shrink-0 w-24 sm:w-36 md:w-48 lg:w-56 aspect-[4/3] rounded-xl overflow-hidden border-2 border-white/10">
-                <Image
-                  src={urlFor(project.coverImage).width(400).height(300).url()}
-                  alt={`${project.title} in ${project.location}`}
-                  width={400}
-                  height={300}
-                  className="object-cover w-full h-full"
-                />
+              <div className="relative order-first lg:order-none">
+                <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-tr from-keva-orange/25 via-keva-orange/5 to-transparent blur-2xl" />
+                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden ring-1 ring-white/10 shadow-2xl shadow-black/60">
+                  <Image
+                    src={urlFor(project.coverImage).width(1200).height(900).url()}
+                    alt={`${project.title} in ${project.location}`}
+                    fill
+                    priority
+                    sizes="(min-width: 1024px) 55vw, 100vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-keva-black/30 via-transparent to-transparent" />
+                </div>
               </div>
             )}
           </div>
@@ -151,7 +182,7 @@ export default async function ProjectDetailPage({
 
               {/* Milestone Timeline (new) or Legacy Gallery/Videos (fallback) */}
               {project.milestones && project.milestones.length > 0 ? (
-                <div>
+                <div id="journey" className="scroll-mt-28">
                   <h3 className="font-heading text-xl font-bold text-keva-black mb-2">
                     Project Journey
                   </h3>
